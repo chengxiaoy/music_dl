@@ -94,8 +94,8 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=100
 
 
 class Config():
-    train_batch_size = 32
-    val_batch_size = 32
+    train_batch_size = 16
+    val_batch_size = 16
     num_classes = 10
 
 
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     writer = SummaryWriter(logdir=os.path.join("../tb_log", "font_" + datetime.now().strftime('%b%d_%H-%M-%S')))
 
     gtzan_datasets = audio_dataset.get_gtzan_datasets()
-    gtzan_dataloaders = {x: DataLoader(gtzan_datasets[x], batch_size=32, shuffle=True, num_workers=8) for x in
+    gtzan_dataloaders = {x: DataLoader(gtzan_datasets[x], batch_size=16, shuffle=True, num_workers=8) for x in
                          ['train', 'val']}
 
     model = models.resnet50(pretrained=True)
