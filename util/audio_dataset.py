@@ -28,7 +28,7 @@ class GTZANDataSet(Dataset):
 
 
 def get_gtzan_datasets():
-    genres_path = "genres/"
+    genres_path = "../genres/"
 
     audio_paths = glob(genres_path + "*/*.au")
 
