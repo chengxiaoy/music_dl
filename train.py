@@ -88,7 +88,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=100
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    torch.save(model.state_dict(), "fonts_cnn_classifier.pth")
+    torch.save(model.state_dict(), "music_cnn.pth")
 
     return model, val_acc_history
 
