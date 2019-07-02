@@ -6,6 +6,7 @@ from torch import nn
 from torch.optim import Adam
 from tensorboardX import SummaryWriter
 from datetime import datetime
+from model.cnn_baseline import CNN_Baseline
 import os
 import time
 import copy
@@ -106,7 +107,9 @@ if __name__ == '__main__':
     gtzan_dataloaders = {x: DataLoader(gtzan_datasets[x], batch_size=16, shuffle=True, num_workers=8) for x in
                          ['train', 'val']}
 
-    model = models.resnet50(pretrained=True)
+    # model = models.resnet50(pretrained=True)
+    model = CNN_Baseline()
+
     model = model.to(device)
     in_features = model.fc.in_features
     out_features = Config.num_classes
