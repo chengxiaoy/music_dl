@@ -162,7 +162,7 @@ class CNN_Choi_Slim(Module):
 
 class RCNN_Choi(Module):
     def __init__(self):
-        super(CNN_Choi_Slim, self).__init__()
+        super(RCNN_Choi, self).__init__()
 
         # input block
         self.bn = nn.BatchNorm2d(96)
@@ -172,34 +172,35 @@ class RCNN_Choi(Module):
 
         self.bn1 = nn.BatchNorm2d(64)
         self.activate1 = nn.ELU()
-        self.maxpool1 = nn.MaxPool2d((2, 4))
+        self.maxpool1 = nn.MaxPool2d((2, 2))
+        self.dropout1 = nn.Dropout(0.1)
 
         # block2
         self.conv2 = nn.Conv2d(64, 128, 3, padding=1)
         self.bn2 = nn.BatchNorm2d(128)
         self.activate2 = nn.ELU()
-        self.maxpool2 = nn.MaxPool2d((2, 4))
+        self.maxpool2 = nn.MaxPool2d((3, 3))
+        self.dropout2 = nn.Dropout(0.1)
 
         # block3
         self.conv3 = nn.Conv2d(128, 128, 3, padding=1)
         self.bn3 = nn.BatchNorm2d(128)
         self.activate3 = nn.ELU()
-        self.maxpool3 = nn.MaxPool2d((2, 4))
+        self.maxpool3 = nn.MaxPool2d((4, 4))
+        self.dropout3 = nn.Dropout(0.1)
 
         # block4
         self.conv4 = nn.Conv2d(128, 128, 3, padding=1)
         self.bn4 = nn.BatchNorm2d(128)
         self.activate4 = nn.ELU()
-        self.maxpool4 = nn.MaxPool2d((3, 5))
+        self.maxpool4 = nn.MaxPool2d((4, 4))
+        self.dropout4 = nn.Dropout(0.1)
 
-        # block5
-        self.conv5 = nn.Conv2d(128, 64, 3, padding=1)
-        self.bn5 = nn.BatchNorm2d(64)
-        self.activate5 = nn.ELU()
-        self.maxpool5 = nn.MaxPool2d((4, 4))
-        self.hidden = nn.Linear(64, 256)
+        self.gru1 = nn.GRU(128, 32)
+        self.gru2 = nn.GRU(32, 32)
+        self.dropout5 = nn.Dropout(0.3)
 
-        self.fc = nn.Linear(64, 10)
+        self.fc = nn.Linear(32, 10)
 
     def forward(self, x):
         x = x.permute(0, 2, 1, 3)
