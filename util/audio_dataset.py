@@ -20,15 +20,20 @@ audio_mel_dir = "audio/"
 
 
 class GTZANDataSet(Dataset):
-    def __init__(self, audio_infos):
+    def __init__(self, audio_infos, version=1):
         self.audio_infos = audio_infos
+        self.version = version
 
     def __getitem__(self, index):
         audio_info = self.audio_infos[index]
 
         audio_path = audio_info[0]
-        md5 = parse_md5(audio_path)
-        mel_path = audio_mel_dir + md5 + ".pkl"
+        if self.version == 1:
+            md5 = parse_md5(audio_path)
+            mel_path = audio_mel_dir + md5 + ".pkl"
+        elif self.version == 2:
+            md5 = parse_md5(audio_path + "version:2")
+            mel_path = audio_mel_dir + md5 + ".pkl"
         if not os.path.exists(mel_path):
             audio2mel(audio_path, mel_path)
 
@@ -40,12 +45,15 @@ class GTZANDataSet(Dataset):
         return len(self.audio_infos)
 
 
-def audio2mel(audio_path, mel_path):
-    mel_spectrum = compute_melgram(audio_path)
+def audio2mel(audio_path, mel_path, version=1):
+    if version == 1:
+        mel_spectrum = compute_melgram(audio_path)
+    elif version == 2:
+        mel_spectrum = compute_melgram(audio_path, SR=22050, N_FFT=2048, N_MELS=128, HOP_LEN=1024, DURA=30)
     joblib.dump(mel_spectrum, mel_path)
 
 
-def get_gtzan_datasets():
+def get_gtzan_datasets(version=1):
     genres_path = "../genres/"
     audio_paths = glob(genres_path + "*/*.au")
 
@@ -67,5 +75,5 @@ def get_gtzan_datasets():
 
     # train_audio_infos, test_audio_infos = train_test_split(audio_infos)
 
-    audio_datasets = {'train': GTZANDataSet(train_audio_infos), 'val': GTZANDataSet(test_audio_infos)}
+    audio_datasets = {'train': GTZANDataSet(train_audio_infos, version), 'val': GTZANDataSet(test_audio_infos, version)}
     return audio_datasets
