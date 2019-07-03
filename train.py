@@ -104,7 +104,7 @@ if __name__ == '__main__':
     writer = SummaryWriter(logdir=os.path.join("../tb_log", "font_" + datetime.now().strftime('%b%d_%H-%M-%S')))
 
     gtzan_datasets = audio_dataset.get_gtzan_datasets()
-    gtzan_dataloaders = {x: DataLoader(gtzan_datasets[x], batch_size=16, shuffle=True, num_workers=8) for x in
+    gtzan_dataloaders = {x: DataLoader(gtzan_datasets[x], batch_size=16, shuffle=True, num_workers=16) for x in
                          ['train', 'val']}
 
     # model = models.resnet50(pretrained=True)
