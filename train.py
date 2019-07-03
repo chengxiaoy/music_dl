@@ -108,12 +108,12 @@ if __name__ == '__main__':
                          ['train', 'val']}
 
     # model = models.resnet50(pretrained=True)
+    # in_features = model.fc.in_features
+    # out_features = Config.num_classes
+    # model.fc = torch.nn.Linear(in_features, out_features)
     model = CNN_Baseline()
-
     model = model.to(device)
-    in_features = model.fc.in_features
-    out_features = Config.num_classes
-    model.fc = torch.nn.Linear(in_features, out_features)
+
     criterion = nn.CrossEntropyLoss()
     optimizer = Adam(model.parameters(), lr=0.001)
     train_model(model, gtzan_dataloaders, criterion, optimizer, writer=writer)
