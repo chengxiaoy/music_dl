@@ -26,6 +26,7 @@ class GTZANDataSet(Dataset):
         audio_info = self.audio_infos[index]
         # mel_spectrum = compute_melgram(audio_info[0])
         mel_spectrum = self.audio_mels[audio_info[0]]
+        mel_spectrum = np.array(mel_spectrum)
 
         return torch.Tensor(mel_spectrum[0]).float(), torch.LongTensor([audio_info[1]])
 
