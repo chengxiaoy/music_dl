@@ -118,7 +118,7 @@ class CNN_Choi_Slim(Module):
         self.maxpool5 = nn.MaxPool2d((4, 4))
         self.hidden = nn.Linear(64, 256)
 
-        self.fc = nn.Linear(256, 10)
+        self.fc = nn.Linear(64, 10)
 
     def forward(self, x):
         x = self.conv1(x)
