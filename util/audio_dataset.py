@@ -62,7 +62,7 @@ def get_gtzan_datasets():
     test_audio_infos = []
     for index in train_index:
         train_audio_infos.append(audio_infos[index])
-    for index in train_index:
+    for index in test_index:
         test_audio_infos.append(audio_infos[index])
 
     # train_audio_infos, test_audio_infos = train_test_split(audio_infos)
