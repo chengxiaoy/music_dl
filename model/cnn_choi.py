@@ -87,6 +87,10 @@ class CNN_Choi_Slim(Module):
 
     def __init__(self):
         super(CNN_Choi_Slim, self).__init__()
+
+        # input block
+        self.bn = nn.BatchNorm2d(96)
+
         # block1
         self.conv1 = nn.Conv2d(1, 64, 3, padding=1)
         self.bn1 = nn.BatchNorm2d(64)
@@ -121,6 +125,10 @@ class CNN_Choi_Slim(Module):
         self.fc = nn.Linear(64, 10)
 
     def forward(self, x):
+        x = x.permute(0, 2, 1, 3)
+        x = self.bn(x)
+        x = x.permute(0, 2, 1, 3)
+
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.activate1(x)
@@ -150,6 +158,9 @@ class CNN_Choi_Slim(Module):
         # x = self.hidden(x)
         x = self.fc(x)
         return x
+
+
+# class RCNN_Choi(Module):
 
 
 if __name__ == '__main__':

@@ -104,7 +104,7 @@ class Config():
 if __name__ == '__main__':
     writer = SummaryWriter(logdir=os.path.join("../tb_log", "muisc_" + datetime.now().strftime('%b%d_%H-%M-%S')))
 
-    gtzan_datasets = audio_dataset.get_gtzan_datasets(version=2)
+    gtzan_datasets = audio_dataset.get_gtzan_datasets(version=1)
     gtzan_dataloaders = {x: DataLoader(gtzan_datasets[x], batch_size=16, shuffle=True, num_workers=16) for x in
                          ['train', 'val']}
 
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     # in_features = model.fc.in_features
     # out_features = Config.num_classes
     # model.fc = torch.nn.Linear(in_features, out_features)
-    model = CNN_Baseline()
+    model = CNN_Choi_Slim()
     model = model.to(device)
 
     criterion = nn.CrossEntropyLoss()
