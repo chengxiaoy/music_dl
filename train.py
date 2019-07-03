@@ -80,7 +80,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=100
                 val_acc_history.append(epoch_acc)
 
         writer.add_scalars('data/acc', {'train': info["train"]['acc'], 'val': info["val"]['acc']}, epoch)
-        writer.add_scalars('data/loss', {'train': info["val"]['loss'], 'val': info["val"]['loss']}, epoch)
+        writer.add_scalars('data/loss', {'train': info["train"]['loss'], 'val': info["val"]['loss']}, epoch)
 
         print()
     time_elapsed = time.time() - since
