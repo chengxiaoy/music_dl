@@ -12,7 +12,7 @@ from util.audio_processor import *
 import h5py
 import os
 from glob import glob
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold
 import joblib
 from util.ecoding import parse_md5
 
@@ -52,8 +52,20 @@ def get_gtzan_datasets():
     genres_list = list(set([x.split('/')[-2] for x in audio_paths]))
 
     audio_infos = [(x, genres_list.index(x.split('/')[-2])) for x in audio_paths]
+    audio_labels = [genres_list.index(x.split('/')[-2]) for x in audio_paths]
 
-    train_audio_infos, test_audio_infos = train_test_split(audio_infos)
+    # StratifiedKFold
+    sfolder = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
+    train_index, test_index = list(sfolder.split(audio_infos, audio_labels))[0]
+
+    train_audio_infos = []
+    test_audio_infos = []
+    for index in train_index:
+        train_audio_infos.append(audio_infos[index])
+    for index in train_index:
+        test_audio_infos.append(audio_infos[index])
+
+    # train_audio_infos, test_audio_infos = train_test_split(audio_infos)
 
     audio_datasets = {'train': GTZANDataSet(train_audio_infos), 'val': GTZANDataSet(test_audio_infos)}
     return audio_datasets
