@@ -10,6 +10,8 @@ class CNN_Baseline(Module):
     """
     model from Music Genre Recognition using Deep Neural Networks and Transfer Learning
     maybe not work
+    <<Music Genre Recognition using Deep Neural Networks and Transfer Learning>>
+
     """
 
     def __init__(self):
