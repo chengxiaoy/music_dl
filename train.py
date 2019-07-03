@@ -112,7 +112,7 @@ if __name__ == '__main__':
     # in_features = model.fc.in_features
     # out_features = Config.num_classes
     # model.fc = torch.nn.Linear(in_features, out_features)
-    model = CNN_Choi_Slim()
+    model = CNN_Choi()
     model = model.to(device)
 
     criterion = nn.CrossEntropyLoss()
