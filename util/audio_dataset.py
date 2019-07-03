@@ -20,7 +20,6 @@ audio_mel_h5_path = "audio/audio_mel.hdf5"
 class GTZANDataSet(Dataset):
     def __init__(self, audio_infos):
         self.audio_infos = audio_infos
-        # self.audio_mels = h5py.File(audio_mel_h5_path, 'r')
 
     def __getitem__(self, index):
         audio_info = self.audio_infos[index]
@@ -39,11 +38,6 @@ def get_gtzan_datasets():
     genres_list = list(set([x.split('/')[-2] for x in audio_paths]))
 
     audio_infos = [(x, genres_list.index(x.split('/')[-2])) for x in audio_paths]
-    # if not os.path.exists(audio_mel_h5_path):
-    #     with h5py.File(audio_mel_h5_path, 'w') as f:
-    #         for audio_path, index in audio_infos:
-    #             mel_spectrum = compute_melgram(audio_path)
-    #             f.create_dataset(name=audio_path, data=mel_spectrum)
 
     train_audio_infos, test_audio_infos = train_test_split(audio_infos)
 
