@@ -7,12 +7,12 @@ from torch.optim import Adam
 from tensorboardX import SummaryWriter
 from datetime import datetime
 from model.cnn_baseline import CNN_Baseline
-from model.cnn_choi import CNN_Choi
+from model.cnn_choi import CNN_Choi, CNN_Choi_Slim
 import os
 import time
 import copy
 
-device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
 
 def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=100):
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     # in_features = model.fc.in_features
     # out_features = Config.num_classes
     # model.fc = torch.nn.Linear(in_features, out_features)
-    model = CNN_Choi()
+    model = CNN_Choi_Slim()
     model = model.to(device)
 
     criterion = nn.CrossEntropyLoss()

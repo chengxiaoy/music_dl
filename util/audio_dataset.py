@@ -13,8 +13,10 @@ import h5py
 import os
 from glob import glob
 from sklearn.model_selection import train_test_split
+import joblib
+from util.ecoding import parse_md5
 
-audio_mel_h5_path = "audio/audio_mel.hdf5"
+audio_mel_dir = "audio/"
 
 
 class GTZANDataSet(Dataset):
@@ -23,12 +25,24 @@ class GTZANDataSet(Dataset):
 
     def __getitem__(self, index):
         audio_info = self.audio_infos[index]
-        mel_spectrum = compute_melgram(audio_info[0])
+
+        audio_path = audio_info[0]
+        md5 = parse_md5(audio_path)
+        mel_path = audio_mel_dir + md5 + ".pkl"
+        if not os.path.exists(mel_path):
+            audio2mel(audio_path, mel_path)
+
+        mel_spectrum = joblib.load(mel_path)
 
         return torch.Tensor(mel_spectrum[0]).float(), torch.LongTensor([audio_info[1]])
 
     def __len__(self):
         return len(self.audio_infos)
+
+
+def audio2mel(audio_path, mel_path):
+    mel_spectrum = compute_melgram(audio_path)
+    joblib.dump(mel_spectrum, mel_path)
 
 
 def get_gtzan_datasets():
