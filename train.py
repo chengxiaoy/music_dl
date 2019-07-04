@@ -7,7 +7,7 @@ from torch.optim import Adam
 from tensorboardX import SummaryWriter
 from datetime import datetime
 from model.cnn_baseline import CNN_Baseline
-from model.cnn_choi import CNN_Choi, CNN_Choi_Slim
+from model.cnn_choi import CNN_Choi, CNN_Choi_Slim, RCNN_Choi
 import os
 import time
 import copy
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     # in_features = model.fc.in_features
     # out_features = Config.num_classes
     # model.fc = torch.nn.Linear(in_features, out_features)
-    model = CNN_Choi_Slim()
+    model = RCNN_Choi()
     model = model.to(device)
 
     criterion = nn.CrossEntropyLoss()
