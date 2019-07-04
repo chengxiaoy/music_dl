@@ -15,7 +15,7 @@ import copy
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
 
-def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=100):
+def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150):
     since = time.time()
     val_acc_history = []
 
