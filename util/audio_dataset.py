@@ -63,17 +63,17 @@ def get_gtzan_datasets(version=1):
     audio_labels = [genres_list.index(x.split('/')[-2]) for x in audio_paths]
 
     # StratifiedKFold
-    sfolder = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
-    train_index, test_index = list(sfolder.split(audio_infos, audio_labels))[0]
+    # sfolder = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
+    # train_index, test_index = list(sfolder.split(audio_infos, audio_labels))[0]
+    #
+    # train_audio_infos = []
+    # test_audio_infos = []
+    # for index in train_index:
+    #     train_audio_infos.append(audio_infos[index])
+    # for index in test_index:
+    #     test_audio_infos.append(audio_infos[index])
 
-    train_audio_infos = []
-    test_audio_infos = []
-    for index in train_index:
-        train_audio_infos.append(audio_infos[index])
-    for index in test_index:
-        test_audio_infos.append(audio_infos[index])
-
-    # train_audio_infos, test_audio_infos = train_test_split(audio_infos)
+    train_audio_infos, test_audio_infos = train_test_split(audio_infos)
 
     audio_datasets = {'train': GTZANDataSet(train_audio_infos, version), 'val': GTZANDataSet(test_audio_infos, version)}
     return audio_datasets
