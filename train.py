@@ -59,7 +59,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
-                        nn.utils.clip_grad_norm(model.parameters(), max_norm=0.1)
+                        # nn.utils.clip_grad_norm(model.parameters(), max_norm=0.1)
                         optimizer.step()
 
                 # statistics
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     # in_features = model.fc.in_features
     # out_features = Config.num_classes
     # model.fc = torch.nn.Linear(in_features, out_features)
-    model = RCNN_Choi()
+    model = CNN_Choi_Slim()
     model = model.to(device)
 
     criterion = nn.CrossEntropyLoss()
