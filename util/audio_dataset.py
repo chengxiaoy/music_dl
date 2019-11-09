@@ -77,3 +77,49 @@ def get_gtzan_datasets(version=1):
 
     audio_datasets = {'train': GTZANDataSet(train_audio_infos, version), 'val': GTZANDataSet(test_audio_infos, version)}
     return audio_datasets
+
+
+class SiameseDataSet(Dataset):
+    def __init__(self, audio_infos):
+        self.audio_infos = audio_infos
+
+    def __getitem__(self, index):
+        if index % 2 == 0:
+            audio_path, audio_label = self.audio_infos[index / 2]
+            melgram_list = compute_melgram_multi_slice(audio_path)
+            melgram1, melgram2 = sample(melgram_list, 2)
+            return torch.Tensor(melgram1).float(), torch.Tensor(melgram2).float(), torch.Tensor([1])
+        else:
+            audio_info1, audio_info2 = sample(self.audio_infos, 2)
+            audio_path1, audio_path2 = audio_info1[0], audio_info2[1]
+            melgram1, melgram2 = choice(compute_melgram_multi_slice(audio_path1)), choice(
+                compute_melgram_multi_slice(audio_path2))
+            return torch.Tensor(melgram1).float(), torch.Tensor(melgram2).float(), torch.Tensor([0])
+
+    def __len__(self):
+        return len(self.audio_infos) * 2
+
+
+def get_siamese_datasets():
+    genres_path = "../siamese/"
+    audio_paths = glob(genres_path + "*/*.mp3")
+
+    genres_list = list(set([x.split('/')[-2] for x in audio_paths]))
+
+    audio_infos = [(x, genres_list.index(x.split('/')[-2])) for x in audio_paths]
+
+    # StratifiedKFold
+    # sfolder = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
+    # train_index, test_index = list(sfolder.split(audio_infos, audio_labels))[0]
+    #
+    # train_audio_infos = []
+    # test_audio_infos = []
+    # for index in train_index:
+    #     train_audio_infos.append(audio_infos[index])
+    # for index in test_index:
+    #     test_audio_infos.append(audio_infos[index])
+
+    train_audio_infos, test_audio_infos = train_test_split(audio_infos)
+
+    audio_datasets = {'train': SiameseDataSet(train_audio_infos), 'val': SiameseDataSet(test_audio_infos)}
+    return audio_datasets
