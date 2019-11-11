@@ -38,7 +38,7 @@ def download_playlist(playlist_id, category):
         lists.append(list)
 
     data_dir = './audio/' + category + '/'
-    if os.path.exists(data_dir):
+    if not os.path.exists(data_dir):
         os.mkdir(data_dir)
 
     for i in lists:
@@ -49,7 +49,8 @@ def download_playlist(playlist_id, category):
             # 这里修改路径，随便指定盘符，但是得存在
             urllib.request.urlretrieve(url, data_dir + '%s.mp3' % name)
             print('下载成功')
-        except:
+        except Exception as e:
+            print(e)
             print('下载失败')
 
 
