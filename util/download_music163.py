@@ -17,7 +17,7 @@ headers = {
 
 def download_playlist(playlist_id, category):
     # 歌单的url地址这里改id
-    play_url = 'http://music.163.com/playlist?id=' + playlist_id
+    play_url = 'http://music.163.com/playlist?id=' + str(playlist_id)
 
     s = requests.session()
     response = s.get(play_url, headers=headers).content
