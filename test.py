@@ -16,7 +16,7 @@ class ThreadSafetyModel(nn.Module):
 
     def forward(self, input):
         print(" in ==={}====".format(time.time()))
-        memory_1G_gpu = torch.Tensor(input).float().half().to(device)
+        memory_1G_gpu = torch.Tensor(input).float().to(device)
         time.sleep(self.sleep_time)
         print("=" * 30)
         print(" out ==={}====".format(time.time()))
