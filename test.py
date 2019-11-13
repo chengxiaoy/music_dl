@@ -34,7 +34,7 @@ memory_1G = np.random.rand(1024, 1024, 256)
 th1 = _thread.start_new_thread(run_model, (model, memory_1G))
 th2 = _thread.start_new_thread(run_model, (model, memory_1G))
 
-time.sleep(11)
+time.sleep(31)
 print(th1)
 print(th2)
 
