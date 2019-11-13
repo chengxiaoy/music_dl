@@ -3,6 +3,7 @@ from torch import nn
 import time
 import _thread
 import threading
+import numpy as np
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -13,7 +14,7 @@ class ThreadSafetyModel(nn.Module):
         super(ThreadSafetyModel, self).__init__()
         self.sleep_time = 10
 
-    def forward(self, *input):
+    def forward(self, input):
         print(" in ==={}====".format(time.time()))
         print(input)
         time.sleep(self.sleep_time)
