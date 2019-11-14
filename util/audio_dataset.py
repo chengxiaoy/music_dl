@@ -15,6 +15,7 @@ from glob import glob
 from sklearn.model_selection import train_test_split, StratifiedKFold
 import joblib
 from util.ecoding import parse_md5
+from multiprocessing import Pool
 
 audio_mel_dir = "audio/"
 
@@ -51,6 +52,14 @@ def audio2mel(audio_path, mel_path, version=1):
     elif version == 2:
         mel_spectrum = compute_melgram(audio_path, SR=22050, N_FFT=2048, N_MELS=128, HOP_LEN=1024, DURA=30)
     joblib.dump(mel_spectrum, mel_path)
+
+
+def audio2Multimel(paths):
+    try:
+        multi_mel_spectrum = compute_melgram_multi_slice(paths[0])
+        joblib.dump(multi_mel_spectrum, paths[1])
+    except Exception as e:
+        print(e)
 
 
 def get_gtzan_datasets(version=1):
@@ -114,7 +123,6 @@ class SiameseDataSet(Dataset):
 def get_siamese_datasets():
     genres_path = "./audio/"
     audio_paths = glob(genres_path + "*/*.mp3")
-
     genres_list = list(set([x.split('/')[-2] for x in audio_paths]))
 
     audio_infos = [(x, genres_list.index(x.split('/')[-2])) for x in audio_paths]
@@ -134,3 +142,18 @@ def get_siamese_datasets():
 
     audio_datasets = {'train': SiameseDataSet(train_audio_infos), 'val': SiameseDataSet(test_audio_infos)}
     return audio_datasets
+
+
+if __name__ == '__main__':
+    genres_path = "../audio/"
+    audio_paths = glob(genres_path + "*/*.mp3")
+    infos = [x.split('.')[:-1] for x in audio_paths]
+
+    mel_paths = [os.path.join(*x) for x in infos]
+    mel_paths = [x + '.pkl' for x in mel_paths]
+    p = Pool(8)
+    args = []
+    for audio_path, mel_path in zip(audio_paths, mel_paths):
+        args.append((audio_path, mel_path))
+
+    p.map(audio2Multimel, args)
