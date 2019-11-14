@@ -115,7 +115,7 @@ class SiameseDataSet(Dataset):
                     # print("index {} melgram===>{},{}".format(index, audio_path1, audio_path2))
                     return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([0])
             except Exception as e:
-                print("get item {} error {}".format(index, e))
+                # print("get item {} error {}".format(index, e))
                 # 读取音频可能报错
                 return self.__getitem__(index + 2)
 
