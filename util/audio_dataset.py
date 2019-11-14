@@ -104,7 +104,7 @@ class SiameseDataSet(Dataset):
         while True:
             try:
                 if index % 2 == 0:
-                    audio_path, audio_label = self.audio_infos[index // 2]
+                    audio_path, audio_label = self.audio_infos[(index // 2) % len(self.audio_infos)]
                     melgram1, melgram2 = sample(self.get_mel(audio_path), 2)
                     # print("index {} melgram===>{}".format(index, audio_path))
                     return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([1])
@@ -115,6 +115,7 @@ class SiameseDataSet(Dataset):
                     # print("index {} melgram===>{},{}".format(index, audio_path1, audio_path2))
                     return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([0])
             except Exception as e:
+                print("get item {} error {}".format(index, e))
                 # 读取音频可能报错
                 return self.__getitem__(index + 2)
 
