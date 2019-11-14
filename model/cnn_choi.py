@@ -155,6 +155,8 @@ class CNN_Choi_Slim(Module):
 
         x = x.view(x.size(0), -1)
         x = self.hidden(x)
+
+
         # x = self.fc(x)
         return x
 

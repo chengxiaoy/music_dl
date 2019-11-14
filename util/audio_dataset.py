@@ -84,24 +84,33 @@ class SiameseDataSet(Dataset):
         self.audio_infos = audio_infos
 
     def __getitem__(self, index):
-        if index % 2 == 0:
-            audio_path, audio_label = self.audio_infos[index / 2]
-            melgram_list = compute_melgram_multi_slice(audio_path)
-            melgram1, melgram2 = sample(melgram_list, 2)
-            return torch.Tensor(melgram1).float(), torch.Tensor(melgram2).float(), torch.Tensor([1])
-        else:
-            audio_info1, audio_info2 = sample(self.audio_infos, 2)
-            audio_path1, audio_path2 = audio_info1[0], audio_info2[1]
-            melgram1, melgram2 = choice(compute_melgram_multi_slice(audio_path1)), choice(
-                compute_melgram_multi_slice(audio_path2))
-            return torch.Tensor(melgram1).float(), torch.Tensor(melgram2).float(), torch.Tensor([0])
+        print("index===>" + str(index))
+        while True:
+            if index % 2 == 0:
+                audio_path, audio_label = self.audio_infos[index // 2]
+                print("melgram===>" + audio_path)
+
+                melgram_list = compute_melgram_multi_slice(audio_path)
+                if len(melgram_list) < 2:
+                    return self.__getitem__(index + 2)
+                melgram1, melgram2 = sample(melgram_list, 2)
+                return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([1])
+            else:
+                audio_info1, audio_info2 = sample(self.audio_infos, 2)
+                audio_path1, audio_path2 = audio_info1[0], audio_info2[0]
+
+                print("melgram===>{},{}".format(audio_path1, audio_path2))
+
+                melgram1, melgram2 = choice(compute_melgram_multi_slice(audio_path1)), choice(
+                    compute_melgram_multi_slice(audio_path2))
+                return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([0])
 
     def __len__(self):
         return len(self.audio_infos) * 2
 
 
 def get_siamese_datasets():
-    genres_path = "../siamese/"
+    genres_path = "./audio/"
     audio_paths = glob(genres_path + "*/*.mp3")
 
     genres_list = list(set([x.split('/')[-2] for x in audio_paths]))
