@@ -67,6 +67,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
                 running_loss += loss.item()
                 sum = torch.sum(preds == labels.byte())
                 running_corrects += sum
+                break
             print("corrects sum {}".format(str(running_corrects)))
             epoch_loss = running_loss / len(dataloaders[phase])
             epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
