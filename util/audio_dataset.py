@@ -145,7 +145,7 @@ def get_siamese_datasets():
 
 
 if __name__ == '__main__':
-    genres_path = "../audio/"
+    genres_path = "./audio/"
     audio_paths = glob(genres_path + "*/*.mp3")
     infos = [x.split('.')[:-1] for x in audio_paths]
 
