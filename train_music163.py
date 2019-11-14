@@ -36,7 +36,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
             running_loss = 0.0
             running_corrects = 0
             for input1s, input2s, labels in dataloaders[phase]:
-                print("forward")
+                print("=======forward========")
                 input1s = input1s.to(device)
                 input2s = input2s.to(device)
                 labels = labels.to(device)
@@ -57,6 +57,8 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
+                        print("=======backward========")
+
                         loss.backward()
                         # nn.utils.clip_grad_norm(model.parameters(), max_norm=0.1)
                         optimizer.step()

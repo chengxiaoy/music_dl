@@ -84,7 +84,6 @@ class SiameseDataSet(Dataset):
         self.audio_infos = audio_infos
 
     def __getitem__(self, index):
-        print("index===>" + str(index))
         while True:
             try:
                 if index % 2 == 0:
@@ -92,6 +91,8 @@ class SiameseDataSet(Dataset):
 
                     melgram_list = compute_melgram_multi_slice(audio_path)
                     melgram1, melgram2 = sample(melgram_list, 2)
+                    print("index===>" + str(index))
+
                     print("melgram===>" + audio_path)
                     return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([1])
                 else:
@@ -102,6 +103,8 @@ class SiameseDataSet(Dataset):
 
                     melgram1, melgram2 = choice(compute_melgram_multi_slice(audio_path1)), choice(
                         compute_melgram_multi_slice(audio_path2))
+                    print("index===>" + str(index))
+
                     print("melgram===>{},{}".format(audio_path1, audio_path2))
 
                     return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([0])
