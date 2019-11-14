@@ -9,7 +9,7 @@ from model.cnn_choi import *
 from model.siamese_model import SiameseModel
 from torch.optim import Adam
 import torch.nn.functional as F
-
+from tqdm import tqdm
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -35,7 +35,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
                 model.eval()
             running_loss = 0.0
             running_corrects = 0
-            for input1s, input2s, labels in dataloaders[phase]:
+            for input1s, input2s, labels in tqdm(dataloaders[phase]):
                 input1s = input1s.to(device)
                 input2s = input2s.to(device)
                 labels = labels.to(device)
