@@ -86,24 +86,28 @@ class SiameseDataSet(Dataset):
     def __getitem__(self, index):
         print("index===>" + str(index))
         while True:
-            if index % 2 == 0:
-                audio_path, audio_label = self.audio_infos[index // 2]
-                print("melgram===>" + audio_path)
+            try:
+                if index % 2 == 0:
+                    audio_path, audio_label = self.audio_infos[index // 2]
 
-                melgram_list = compute_melgram_multi_slice(audio_path)
-                if len(melgram_list) < 2:
-                    return self.__getitem__(index + 2)
-                melgram1, melgram2 = sample(melgram_list, 2)
-                return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([1])
-            else:
-                audio_info1, audio_info2 = sample(self.audio_infos, 2)
-                audio_path1, audio_path2 = audio_info1[0], audio_info2[0]
+                    melgram_list = compute_melgram_multi_slice(audio_path)
+                    melgram1, melgram2 = sample(melgram_list, 2)
+                    print("melgram===>" + audio_path)
+                    return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([1])
+                else:
+                    audio_info1, audio_info2 = sample(self.audio_infos, 2)
+                    audio_path1, audio_path2 = audio_info1[0], audio_info2[0]
 
-                print("melgram===>{},{}".format(audio_path1, audio_path2))
+                    print("melgram===>{},{}".format(audio_path1, audio_path2))
 
-                melgram1, melgram2 = choice(compute_melgram_multi_slice(audio_path1)), choice(
-                    compute_melgram_multi_slice(audio_path2))
-                return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([0])
+                    melgram1, melgram2 = choice(compute_melgram_multi_slice(audio_path1)), choice(
+                        compute_melgram_multi_slice(audio_path2))
+                    print("melgram===>{},{}".format(audio_path1, audio_path2))
+
+                    return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([0])
+            except Exception as e:
+                # 读取音频可能报错
+                return self.__getitem__(index + 2)
 
     def __len__(self):
         return len(self.audio_infos) * 2

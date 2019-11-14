@@ -10,6 +10,10 @@ from model.siamese_model import SiameseModel
 from torch.optim import Adam
 import torch.nn.functional as F
 
+import warnings
+
+warnings.filterwarnings('ignore')
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
