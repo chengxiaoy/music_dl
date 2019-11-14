@@ -147,10 +147,7 @@ def get_siamese_datasets():
 if __name__ == '__main__':
     genres_path = "./audio/"
     audio_paths = glob(genres_path + "*/*.mp3")
-    infos = [x.split('.')[:-1] for x in audio_paths]
-
-    mel_paths = [os.path.join(*x) for x in infos]
-    mel_paths = [x + '.pkl' for x in mel_paths]
+    mel_paths = [x.replace('.mp3','.pkl') for x in audio_paths]
     p = Pool(8)
     args = []
     for audio_path, mel_path in zip(audio_paths, mel_paths):
