@@ -11,6 +11,7 @@ from torch.optim import Adam
 import torch.nn.functional as F
 from tqdm import tqdm
 import warnings
+import torch
 
 warnings.filterwarnings('ignore')
 
@@ -35,11 +36,17 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
                 model.eval()
             running_loss = 0.0
             running_corrects = 0
+
+            sum_label = torch.zeros(0)
+            sum_preds = torch.zeros(0)
             for input1s, input2s, labels in tqdm(dataloaders[phase]):
+
                 input1s = input1s.to(device)
                 input2s = input2s.to(device)
                 labels = labels.to(device)
                 labels = labels.squeeze()
+
+                sum_label = torch.cat((sum_label, labels))
                 # zero the parameter gradients
                 optimizer.zero_grad()
                 # forward
@@ -51,8 +58,9 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
                     # _, preds = outputs.topk(1, 1, True, True)
                     # _, preds = torch.max(outputs, 1)
 
-                    threshold = 0.5
+                    threshold = 0.2
                     preds = F.pairwise_distance(output1s, output2s) > threshold
+                    sum_preds = torch.cat((sum_preds, preds))
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -62,11 +70,29 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
 
                 # statistics
                 running_loss += loss.item()
-                sum = torch.sum(preds.byte() == labels.byte())
-                running_corrects += sum
-            print("corrects sum {}".format(str(running_corrects)))
+            running_corrects = torch.sum(sum_preds.byte() == sum_label.byte())
+            tp, fp, tn, fn = 0, 0, 0, 0
+            for pred, label in zip(sum_preds.byte(), sum_label.byte()):
+                if pred == label:
+                    if pred == 1:
+                        tp += 1
+                    else:
+                        tn += 1
+                else:
+                    if pred == 1:
+                        fp += 1
+                    else:
+                        fn += 1
+
             epoch_loss = running_loss / len(dataloaders[phase])
             epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+            epoch_tpr = tp*2/len(dataloaders[phase].dataset)
+            epoch_tnr = tn*2/len(dataloaders[phase].dataset)
+            print("corrects sum {}".format(str(running_corrects)))
+            print("epoch_tpr: {}".format(str(epoch_tpr)))
+            print("epoch_tnr: {}".format(str(epoch_tnr)))
+
+
             # epoch_acc = np.mean(mAP)
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
             info[phase] = {'acc': epoch_acc, 'loss': epoch_loss}
@@ -110,6 +136,6 @@ if __name__ == '__main__':
     model = SiameseModel()
     model = model.to(device)
 
-    criterion = loss.ContrastiveLoss()
+    criterion = loss.ContrastiveLoss(margin=0.7)
     optimizer = Adam(model.parameters(), lr=0.01)
     train_model(model, siamese_dataloaders, criterion, optimizer, writer=writer)
