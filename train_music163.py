@@ -24,6 +24,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
+    stop_times = 0
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -98,15 +99,21 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
 
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
+                stop_times = 0
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
                 torch.save(model.state_dict(), "music_siamese.pth")
+            if phase == 'val' and epoch_acc < best_acc:
+                stop_times = stop_times + 1
+
             if phase == 'val':
                 val_acc_history.append(epoch_acc)
 
         writer.add_scalars('data/acc', {'train': info["train"]['acc'], 'val': info["val"]['acc']}, epoch)
         writer.add_scalars('data/loss', {'train': info["train"]['loss'], 'val': info["val"]['loss']}, epoch)
         scheduler.step(info["val"]['loss'])
+        if stop_times >= 10:
+            break
     time_elapsed = time.time() - since
 
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -137,5 +144,5 @@ if __name__ == '__main__':
 
     criterion = loss.ContrastiveLoss(margin=0.7)
     optimizer = Adam(model.parameters(), lr=0.001)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=10, factor=0.1, verbose=True)
-    train_model(model, siamese_dataloaders, criterion, optimizer, writer, scheduler,num_epochs=100)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=6, factor=0.1, verbose=True)
+    train_model(model, siamese_dataloaders, criterion, optimizer, writer, scheduler, num_epochs=100)
