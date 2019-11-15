@@ -46,7 +46,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
                 labels = labels.to(device)
                 labels = labels.squeeze()
 
-                sum_label = torch.cat((sum_label, labels))
+                sum_label = torch.cat((sum_label, labels.cpu()))
                 # zero the parameter gradients
                 optimizer.zero_grad()
                 # forward
