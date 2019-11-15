@@ -136,5 +136,5 @@ if __name__ == '__main__':
 
     criterion = loss.ContrastiveLoss(margin=0.7)
     optimizer = Adam(model.parameters(), lr=0.001)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=5, factor=0.1, verbose=True)
-    train_model(model, siamese_dataloaders, criterion, optimizer, scheduler, writer=writer)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=10, factor=0.1, verbose=True)
+    train_model(model, siamese_dataloaders, criterion, optimizer, writer, scheduler,num_epochs=100)
