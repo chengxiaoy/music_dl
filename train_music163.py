@@ -111,5 +111,5 @@ if __name__ == '__main__':
     model = model.to(device)
 
     criterion = loss.ContrastiveLoss()
-    optimizer = Adam(model.parameters(), lr=0.001)
+    optimizer = Adam(model.parameters(), lr=0.01)
     train_model(model, siamese_dataloaders, criterion, optimizer, writer=writer)
