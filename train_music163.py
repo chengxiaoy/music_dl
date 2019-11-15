@@ -59,7 +59,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
                     # _, preds = torch.max(outputs, 1)
 
                     threshold = 0.2
-                    preds = F.pairwise_distance(output1s, output2s) > threshold
+                    preds = F.pairwise_distance(output1s, output2s) < threshold
                     sum_preds = torch.cat((sum_preds, preds.cpu().float()))
 
                     # backward + optimize only if in training phase
