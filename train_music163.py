@@ -18,7 +18,7 @@ warnings.filterwarnings('ignore')
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150):
+def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num_epochs=150):
     since = time.time()
     val_acc_history = []
 
@@ -86,12 +86,11 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
 
             epoch_loss = running_loss / len(dataloaders[phase])
             epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
-            epoch_tpr = tp*2/len(dataloaders[phase].dataset)
-            epoch_tnr = tn*2/len(dataloaders[phase].dataset)
+            epoch_tpr = tp * 2 / len(dataloaders[phase].dataset)
+            epoch_tnr = tn * 2 / len(dataloaders[phase].dataset)
             print("corrects sum {}".format(str(running_corrects)))
             print("epoch_tpr: {}".format(str(epoch_tpr)))
             print("epoch_tnr: {}".format(str(epoch_tnr)))
-
 
             # epoch_acc = np.mean(mAP)
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
@@ -106,8 +105,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
 
         writer.add_scalars('data/acc', {'train': info["train"]['acc'], 'val': info["val"]['acc']}, epoch)
         writer.add_scalars('data/loss', {'train': info["train"]['loss'], 'val': info["val"]['loss']}, epoch)
-
-        print()
+        scheduler.step(info["val"]['loss'])
     time_elapsed = time.time() - since
 
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -137,5 +135,6 @@ if __name__ == '__main__':
     model = model.to(device)
 
     criterion = loss.ContrastiveLoss(margin=0.7)
-    optimizer = Adam(model.parameters(), lr=0.01)
-    train_model(model, siamese_dataloaders, criterion, optimizer, writer=writer)
+    optimizer = Adam(model.parameters(), lr=0.001)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=5, factor=0.1, verbose=True)
+    train_model(model, siamese_dataloaders, criterion, optimizer, scheduler, writer=writer)
