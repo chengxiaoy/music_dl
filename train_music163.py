@@ -100,6 +100,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
+                torch.save(model.state_dict(), "music_siamese.pth")
             if phase == 'val':
                 val_acc_history.append(epoch_acc)
 
