@@ -54,7 +54,7 @@ def full_index_v1(paths):
             if mel is None:
                 continue
             output = model.forward_once(mel.to(device))
-            vec = output[0].detach().numpy()
+            vec = output[0].cpu().detach().numpy()
             vec_list.append(vec)
             path_list.append(path)
             print("extract vect from {}".format(path))
