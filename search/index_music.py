@@ -8,7 +8,7 @@ import os
 from glob import glob
 
 warnings.filterwarnings('ignore')
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 
 class MusicDataset(Dataset):
@@ -54,7 +54,7 @@ def full_index_v1(paths):
             if mel is None:
                 continue
             output = model.forward_once(mel.to(device))
-            vec = output[0].cpu().numpy()
+            vec = output[0].detach().numpy()
             vec_list.append(vec)
             path_list.append(path)
             print("extract vect from {}".format(path))
