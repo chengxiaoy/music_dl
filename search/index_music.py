@@ -45,7 +45,7 @@ def full_index_v1(paths):
     model.eval()
 
     m_dataset = MusicDataset(paths, False)
-    data_loader = DataLoader(m_dataset, shuffle=False, num_workers=4, batch_size=8, collate_fn=collate_double)
+    data_loader = DataLoader(m_dataset, shuffle=False, num_workers=8, batch_size=16, collate_fn=collate_double)
     vec_list = []
     path_list = []
 
