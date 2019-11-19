@@ -51,7 +51,7 @@ def full_index_v1(paths):
 
     for mels, paths in data_loader:
         for mel, path in zip(mels, paths):
-            if mel == None:
+            if mel is None:
                 continue
             output = model.forward_once(mel.to(device))
             vec = output[0].cpu().numpy()
