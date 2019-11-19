@@ -26,7 +26,7 @@ class MusicDataset(Dataset):
             if self.multi:
                 return audio_processor.compute_melgram_multi_slice(self.music_paths[index]), self.music_paths[index]
             else:
-                return audio_processor.compute_melgram(self.music_paths[index]), self.music_paths[index]
+                return torch.Tensor(audio_processor.compute_melgram(self.music_paths[index])).float(), self.music_paths[index]
         except Exception as e:
             print(e)
             return None, self.music_paths[index]
@@ -57,6 +57,7 @@ def full_index_v1(paths):
             vec = output[0].cpu().numpy()
             vec_list.append(vec)
             path_list.append(path)
+            print("extract vect from {}".format(path))
     joblib.dump((vec_list, path_list), "vec.pkl")
 
 
