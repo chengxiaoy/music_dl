@@ -11,18 +11,20 @@ from torch.optim import Adam
 import torch.nn.functional as F
 from tqdm import tqdm
 import warnings
+import torch
 
 warnings.filterwarnings('ignore')
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150):
+def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num_epochs=150):
     since = time.time()
     val_acc_history = []
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
+    stop_times = 0
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -35,11 +37,17 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
                 model.eval()
             running_loss = 0.0
             running_corrects = 0
+
+            sum_label = torch.zeros(0)
+            sum_preds = torch.zeros(0)
             for input1s, input2s, labels in tqdm(dataloaders[phase]):
+
                 input1s = input1s.to(device)
                 input2s = input2s.to(device)
                 labels = labels.to(device)
                 labels = labels.squeeze()
+
+                sum_label = torch.cat((sum_label, labels.cpu()))
                 # zero the parameter gradients
                 optimizer.zero_grad()
                 # forward
@@ -51,8 +59,9 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
                     # _, preds = outputs.topk(1, 1, True, True)
                     # _, preds = torch.max(outputs, 1)
 
-                    threshold = 0.5
-                    preds = F.pairwise_distance(output1s, output2s) > threshold
+                    threshold = 0.2
+                    preds = F.pairwise_distance(output1s, output2s) < threshold
+                    sum_preds = torch.cat((sum_preds, preds.cpu().float()))
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -62,26 +71,49 @@ def train_model(model, dataloaders, criterion, optimizer, writer, num_epochs=150
 
                 # statistics
                 running_loss += loss.item()
-                sum = torch.sum(preds.byte() == labels.byte())
-                running_corrects += sum
-            print("corrects sum {}".format(str(running_corrects)))
+            running_corrects = torch.sum(sum_preds.byte() == sum_label.byte())
+            tp, fp, tn, fn = 0, 0, 0, 0
+            for pred, label in zip(sum_preds.byte(), sum_label.byte()):
+                if pred == label:
+                    if pred == 1:
+                        tp += 1
+                    else:
+                        tn += 1
+                else:
+                    if pred == 1:
+                        fp += 1
+                    else:
+                        fn += 1
+
             epoch_loss = running_loss / len(dataloaders[phase])
             epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+            epoch_tpr = tp * 2 / len(dataloaders[phase].dataset)
+            epoch_tnr = tn * 2 / len(dataloaders[phase].dataset)
+            print("corrects sum {}".format(str(running_corrects)))
+            print("epoch_tpr: {}".format(str(epoch_tpr)))
+            print("epoch_tnr: {}".format(str(epoch_tnr)))
+
             # epoch_acc = np.mean(mAP)
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
             info[phase] = {'acc': epoch_acc, 'loss': epoch_loss}
 
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
+                stop_times = 0
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
+                torch.save(model.state_dict(), "music_siamese.pth")
+            if phase == 'val' and epoch_acc < best_acc:
+                stop_times = stop_times + 1
+
             if phase == 'val':
                 val_acc_history.append(epoch_acc)
 
         writer.add_scalars('data/acc', {'train': info["train"]['acc'], 'val': info["val"]['acc']}, epoch)
         writer.add_scalars('data/loss', {'train': info["train"]['loss'], 'val': info["val"]['loss']}, epoch)
-
-        print()
+        scheduler.step(info["val"]['loss'])
+        if stop_times >= 10:
+            break
     time_elapsed = time.time() - since
 
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -110,6 +142,7 @@ if __name__ == '__main__':
     model = SiameseModel()
     model = model.to(device)
 
-    criterion = loss.ContrastiveLoss()
+    criterion = loss.ContrastiveLoss(margin=0.7)
     optimizer = Adam(model.parameters(), lr=0.001)
-    train_model(model, siamese_dataloaders, criterion, optimizer, writer=writer)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=6, factor=0.1, verbose=True)
+    train_model(model, siamese_dataloaders, criterion, optimizer, writer, scheduler, num_epochs=100)
