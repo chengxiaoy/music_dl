@@ -61,7 +61,7 @@ def full_index_v1(paths):
 
 
 if __name__ == '__main__':
-    music_path = "../audio/"
+    music_path = "./audio/"
     audio_paths = glob(music_path + "*/*.mp3")
     print(len(audio_paths))
     full_index_v1(audio_paths)
