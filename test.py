@@ -23,6 +23,7 @@ class ThreadSafetyModel(nn.Module):
 
         memory_1G_gpu = torch.Tensor(memory_1G).float().to(device)
         memory_1G_gpu_ = torch.Tensor(memory_1G_).float().to(device)
+        print("===begin computer=====")
 
         res = memory_1G_gpu_.mm(memory_1G_gpu)
         print(res.shape)
