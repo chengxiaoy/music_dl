@@ -18,8 +18,8 @@ class ThreadSafetyModel(nn.Module):
         print(" in ==={}====".format(time.time()))
         # memory_1G_gpu = torch.Tensor(input).float().to(device)
 
-        memory_1G = np.random.rand(1024*1024, 1024)
-        memory_1G_ = np.random.rand(1024, 1024*1024)
+        memory_1G = np.random.rand(1024*1024, 768)
+        memory_1G_ = np.random.rand(768, 1024*1024)
         print("===begin put gpu=====")
 
 
