@@ -5,7 +5,7 @@ import _thread
 import threading
 import numpy as np
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
 
 class ThreadSafetyModel(nn.Module):
