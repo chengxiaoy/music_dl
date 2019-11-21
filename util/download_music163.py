@@ -19,7 +19,6 @@ headers = {
 
 
 def dowload_song(song_id):
-
     try:
         song_url = 'http://music.163.com/song/media/outer/url?id=' + str(song_id) + '.mp3'
 
@@ -32,7 +31,9 @@ def dowload_song(song_id):
         if not os.path.exists(data_dir):
             os.mkdir(data_dir)
 
-        urllib.request.urlretrieve(song_url, data_dir + '{}.mp3'.format(song_id))
+        audio_path = data_dir + '{}.mp3'.format(song_id)
+        urllib.request.urlretrieve(song_url, audio_path)
+
         print('下载成功')
     except Exception as e:
         print(e)
