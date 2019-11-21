@@ -85,7 +85,7 @@ if __name__ == '__main__':
     song_ids = conn.smembers('song_id')
     song_ids = [int(x) for x in song_ids]
 
-    p = Pool(4)
+    p = Pool(16)
 
     p.map(dowload_song, song_ids)
 
