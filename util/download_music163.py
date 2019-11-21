@@ -25,7 +25,7 @@ def dowload_song(song_id):
         print('正在下载', song_id)
         # 这里修改路径，随便指定盘符，但是得存在
 
-        subdir = 'data' + song_id // 20000
+        subdir = 'data' + str(song_id // 20000)
 
         data_dir = './audio/' + subdir + '/'
         if not os.path.exists(data_dir):
@@ -81,15 +81,15 @@ def download_playlist(playlist_id, category):
 
 
 if __name__ == '__main__':
-    conn = Redis(host='116.62.226.241', port=6379, password=154615)
-    song_ids = conn.smembers('song_id')
-    song_ids = [int(x) for x in song_ids]
+    # conn = Redis(host='116.62.226.241', port=6379, password=154615)
+    # song_ids = conn.smembers('song_id')
+    # song_ids = [int(x) for x in song_ids]
+    #
+    # p = Pool(4)
+    #
+    # p.map(dowload_song, song_ids)
 
-    p = Pool(4)
-
-    p.map(dowload_song, song_ids)
-
-    # dowload_song(27501701)
+    dowload_song(27501701)
     #
     # download_playlist(2916766519, '轻音乐')
 # download_playlist(959196950, '轻音乐')
