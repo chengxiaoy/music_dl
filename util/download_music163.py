@@ -35,6 +35,7 @@ def dowload_song(song_id):
         urllib.request.urlretrieve(song_url, data_dir + '%s.mp3' % song_id)
         print('下载成功')
     except Exception as e:
+        print(e)
         print('下载失败')
 
 
