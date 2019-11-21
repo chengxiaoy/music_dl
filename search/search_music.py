@@ -32,17 +32,17 @@ features = np.array(features)
 index = get_index(features)
 # feature1 = model.forward_once(torch.Tensor(compute_melgram(music_path1)).float()).detach().numpy()
 # feature2 = model.forward_once(torch.Tensor(compute_melgram(music_path2)).float()).detach().numpy()
-feature = model.forward_once(torch.Tensor(compute_melgram(music_path)).float()).detach().numpy()
-D, I = index.search(np.array(feature, dtype=np.float32), recall_num)
+# feature = model.forward_once(torch.Tensor(compute_melgram(music_path)).float()).detach().numpy()
+D, I = index.search(np.array(features, dtype=np.float32), recall_num)
 
-# for i, (s_d, s_i) in enumerate(zip(D, I)):
-#     print(s_d[1:])
-#     for k in range(1, 4):
-#         # if s_d[k] > 0.002:
-#         #     break
-#         print("search for {}<===>{}".format(paths[i], paths[s_i[k]]))
+for i, (s_d, s_i) in enumerate(zip(D, I)):
+    print(s_d[1:])
+    for k in range(1, 4):
+        # if s_d[k] > 0.002:
+        #     break
+        print("search for {}<===>{}".format(paths[i], paths[s_i[k]]))
 
-print(D[0])
-print(paths[I[0][0]])
-print(paths[I[0][1]])
-print(paths[I[0][2]])
+# print(D[0])
+# print(paths[I[0][0]])
+# print(paths[I[0][1]])
+# print(paths[I[0][2]])

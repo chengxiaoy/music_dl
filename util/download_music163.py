@@ -28,7 +28,7 @@ def dowload_song(song_id):
 
         subdir = 'data' + song_id // 20000
 
-        data_dir = '../audio/' + subdir + '/'
+        data_dir = './audio/' + subdir + '/'
         if not os.path.exists(data_dir):
             os.mkdir(data_dir)
 
@@ -61,7 +61,7 @@ def download_playlist(playlist_id, category):
         # 全部歌曲信息放在lists列表中
         lists.append(list)
 
-    data_dir = '../audio/' + category + '/'
+    data_dir = './audio/' + category + '/'
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
 
