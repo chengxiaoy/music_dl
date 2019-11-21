@@ -81,15 +81,15 @@ def download_playlist(playlist_id, category):
 
 
 if __name__ == '__main__':
-    # conn = Redis(host='116.62.226.241', port=6379, password=154615)
-    # song_ids = conn.smembers('song_id')
-    # song_ids = [int(x) for x in song_ids]
-    #
-    # p = Pool(4)
-    #
-    # p.map(dowload_song, song_ids)
+    conn = Redis(host='116.62.226.241', port=6379, password=154615)
+    song_ids = conn.smembers('song_id')
+    song_ids = [int(x) for x in song_ids]
 
-    dowload_song(27501701)
+    p = Pool(4)
+
+    p.map(dowload_song, song_ids)
+
+    # dowload_song(27501701)
     #
     # download_playlist(2916766519, '轻音乐')
 # download_playlist(959196950, '轻音乐')
