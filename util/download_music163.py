@@ -32,7 +32,7 @@ def dowload_song(song_id):
         if not os.path.exists(data_dir):
             os.mkdir(data_dir)
 
-        urllib.request.urlretrieve(song_url, data_dir + '%s.mp3' % song_id)
+        urllib.request.urlretrieve(song_url, data_dir + '{}.mp3' % song_id)
         print('下载成功')
     except Exception as e:
         print(e)
@@ -80,15 +80,15 @@ def download_playlist(playlist_id, category):
 
 
 if __name__ == '__main__':
-    conn = Redis(host='116.62.226.241', port=6379, password=154615)
-    song_ids = conn.smembers('song_id')
-    song_ids = [int(x) for x in song_ids]
+    # conn = Redis(host='116.62.226.241', port=6379, password=154615)
+    # song_ids = conn.smembers('song_id')
+    # song_ids = [int(x) for x in song_ids]
+    #
+    # p = Pool(4)
+    #
+    # p.map(dowload_song, song_ids)
 
-    p = Pool(4)
-
-    p.map(dowload_song, song_ids)
-
-    # dowload_song(27501701)
+    dowload_song(27501701)
     #
     # download_playlist(2916766519, '轻音乐')
 # download_playlist(959196950, '轻音乐')
