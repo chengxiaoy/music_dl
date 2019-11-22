@@ -7,7 +7,7 @@ import torch
 
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-music_path = '../util/27501701.mp3'
+music_path = '../audio/data27075/541511427.mp3'
 # music_path1 = '../util/149791.mp3'
 # music_path2 = '../util/392907.mp3'
 
@@ -24,7 +24,7 @@ def get_index(feature):
     return index
 
 
-recall_num = 4
+recall_num = 4000
 
 features, paths = joblib.load('vec.pkl')
 features = np.array(features)
@@ -32,17 +32,18 @@ features = np.array(features)
 index = get_index(features)
 # feature1 = model.forward_once(torch.Tensor(compute_melgram(music_path1)).float()).detach().numpy()
 # feature2 = model.forward_once(torch.Tensor(compute_melgram(music_path2)).float()).detach().numpy()
-# feature = model.forward_once(torch.Tensor(compute_melgram(music_path)).float()).detach().numpy()
-D, I = index.search(np.array(features, dtype=np.float32), recall_num)
+feature = model.forward_once(torch.Tensor(compute_melgram(music_path)).float()).detach().numpy()
+D, I = index.search(np.array(feature, dtype=np.float32), recall_num)
+#
+# for i, (s_d, s_i) in enumerate(zip(D, I)):
+#     print(s_d[1:])
+#     for k in range(1, 4):
+#         # if s_d[k] > 0.002:
+#         #     break
+#         print("search for {}<===>{}".format(paths[i], paths[s_i[k]]))
 
-for i, (s_d, s_i) in enumerate(zip(D, I)):
-    print(s_d[1:])
-    for k in range(1, 4):
-        # if s_d[k] > 0.002:
-        #     break
-        print("search for {}<===>{}".format(paths[i], paths[s_i[k]]))
-
-# print(D[0])
-# print(paths[I[0][0]])
-# print(paths[I[0][1]])
-# print(paths[I[0][2]])
+print(D[0][1000:])
+print(paths[I[0][0]])
+print(paths[I[0][1]])
+print(paths[I[0][2]])
+print(paths[I[0][3]])
