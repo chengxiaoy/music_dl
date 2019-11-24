@@ -155,7 +155,8 @@ if __name__ == '__main__':
     genres_path = "./audio/"
     audio_paths = glob(genres_path + "data*/*.mp3")
     mel_paths = [x.replace('.mp3', '.pkl') for x in audio_paths]
-    p = Pool(8)
+    print(mel_paths)
+    p = Pool(16)
     args = []
     for audio_path, mel_path in zip(audio_paths, mel_paths):
         args.append((audio_path, mel_path))
