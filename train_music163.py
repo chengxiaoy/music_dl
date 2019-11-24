@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
     siamese_datasets = audio_dataset.get_siamese_datasets()
     siamese_dataloaders = {
-        x: DataLoader(siamese_datasets[x], batch_size=64, pin_memory=True, shuffle=True, num_workers=16) for x in
+        x: DataLoader(siamese_datasets[x], batch_size=32, pin_memory=True, shuffle=True, num_workers=16) for x in
         ['train', 'val']}
 
     model = SiameseModel()
