@@ -21,6 +21,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num_epochs=150):
     since = time.time()
     val_acc_history = []
+    saved_model_name = "music_siamese_50000.pth"
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
@@ -102,7 +103,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
                 stop_times = 0
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
-                torch.save(model.state_dict(), "music_siamese.pth")
+                torch.save(model.state_dict(), saved_model_name)
             if phase == 'val' and epoch_acc < best_acc:
                 stop_times = stop_times + 1
 
@@ -112,7 +113,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
         writer.add_scalars('data/acc', {'train': info["train"]['acc'], 'val': info["val"]['acc']}, epoch)
         writer.add_scalars('data/loss', {'train': info["train"]['loss'], 'val': info["val"]['loss']}, epoch)
         scheduler.step(info["val"]['loss'])
-        if stop_times >= 10:
+        if stop_times >= 20:
             break
     time_elapsed = time.time() - since
 
@@ -121,7 +122,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    torch.save(model.state_dict(), "music_siamese.pth")
+    torch.save(model.state_dict(), saved_model_name)
 
     return model, val_acc_history
 
@@ -136,7 +137,7 @@ if __name__ == '__main__':
 
     siamese_datasets = audio_dataset.get_siamese_datasets()
     siamese_dataloaders = {
-        x: DataLoader(siamese_datasets[x], batch_size=16, pin_memory=True, shuffle=True, num_workers=8) for x in
+        x: DataLoader(siamese_datasets[x], batch_size=64, pin_memory=True, shuffle=True, num_workers=16) for x in
         ['train', 'val']}
 
     model = SiameseModel()
