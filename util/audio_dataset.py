@@ -125,10 +125,14 @@ class SiameseDataSet(Dataset):
 
 def get_siamese_datasets():
     genres_path = "./audio/"
-    audio_paths = glob(genres_path + "*/*.mp3")
+    audio_paths = glob(genres_path + "data*/*.mp3")
+    audio_paths = sorted(audio_paths)
+    audio_paths = audio_paths[:50000]
     genres_list = list(set([x.split('/')[-2] for x in audio_paths]))
 
     audio_infos = [(x, genres_list.index(x.split('/')[-2])) for x in audio_paths]
+
+    print(len(audio_infos))
 
     # StratifiedKFold
     # sfolder = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
@@ -149,7 +153,7 @@ def get_siamese_datasets():
 
 if __name__ == '__main__':
     genres_path = "./audio/"
-    audio_paths = glob(genres_path + "*/*.mp3")
+    audio_paths = glob(genres_path + "data*/*.mp3")
     mel_paths = [x.replace('.mp3', '.pkl') for x in audio_paths]
     p = Pool(8)
     args = []
