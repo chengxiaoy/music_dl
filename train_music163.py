@@ -44,9 +44,13 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
             sum_preds = torch.zeros(0)
             for input1s, input2s, labels in tqdm(dataloaders[phase]):
 
-                input1s = input1s.to(device)
-                input2s = input2s.to(device)
-                labels = labels.to(device)
+                # input1s = input1s.to(device)
+                # input2s = input2s.to(device)
+                # labels = labels.to(device)
+
+                input1s = input1s.cuda(device_ids[0])
+                input2s = input2s.cuda(device_ids[0])
+                labels = labels.cuda(device_ids[0])
                 labels = labels.squeeze()
 
                 sum_label = torch.cat((sum_label, labels.cpu()))
