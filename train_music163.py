@@ -16,12 +16,13 @@ import torch
 warnings.filterwarnings('ignore')
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device_ids = [0, 1]
 
 
 def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num_epochs=150):
     since = time.time()
     val_acc_history = []
-    saved_model_name = "music_siamese_50000.pth"
+    saved_model_name = "music_siamese_50000" + datetime.now().strftime('%b%d_%H-%M-%S') + ".pth"
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
@@ -137,11 +138,13 @@ if __name__ == '__main__':
 
     siamese_datasets = audio_dataset.get_siamese_datasets()
     siamese_dataloaders = {
-        x: DataLoader(siamese_datasets[x], batch_size=64, pin_memory=True, shuffle=True, num_workers=16) for x in
+        x: DataLoader(siamese_datasets[x], batch_size=128, pin_memory=True, shuffle=True, num_workers=32) for x in
         ['train', 'val']}
 
     model = SiameseModel()
-    model = model.to(device)
+    model = model.cuda(device_ids[0])
+    model = nn.DataParallel(model, device_ids=device_ids)
+    # model = model.to(device)
 
     criterion = loss.ContrastiveLoss(margin=0.7)
     optimizer = Adam(model.parameters(), lr=0.001)

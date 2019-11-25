@@ -77,7 +77,7 @@ class CNN_Choi(Module):
 
         x = self.conv6(x)
         x = x.view(x.size(0), -1)
-        x = self.fc(x)
+        # x = self.fc(x)
         return x
 
 
@@ -240,7 +240,7 @@ class RCNN_Choi(Module):
 
 
 if __name__ == '__main__':
-    model = RCNN_Choi()
+    model = CNN_Choi()
     audio_path = "../audio/bensound-actionable.mp3"
     mel_spectrum = compute_melgram(audio_path)
     mel_spectrum = torch.from_numpy(mel_spectrum).float()

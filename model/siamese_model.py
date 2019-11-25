@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from model.cnn_choi import CNN_Choi_Slim
+from model.cnn_choi import CNN_Choi_Slim,CNN_Choi
 from util import audio_processor
 from torch.nn import functional
 
@@ -9,8 +9,8 @@ class SiameseModel(nn.Module):
 
     def __init__(self):
         super(SiameseModel, self).__init__()
-        self.backbone = CNN_Choi_Slim()
-        self.ll = nn.Linear(512, 100)
+        self.backbone = CNN_Choi()
+        self.ll = nn.Linear(1024, 100)
         self.relu = nn.ReLU()
         self.ll2 = nn.Linear(100, 1)
         self.normal = nn.functional.normalize
