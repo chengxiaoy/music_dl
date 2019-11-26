@@ -45,7 +45,7 @@ def full_index_v1(paths):
     # load multi gpu weights
     model = SiameseModel()
     model = nn.DataParallel(model)
-    model.load_state_dict(torch.load("music_siamese_50000Nov26_02-52-18.pth"))
+    model.load_state_dict(torch.load("music_siames_50000Nov25_07-45-59.pth"))
     model = model.module
     model.to(device)
     model.eval()
@@ -64,7 +64,7 @@ def full_index_v1(paths):
             vec_list.append(vec)
             path_list.append(path)
             print("extract vect from {}".format(path))
-    joblib.dump((vec_list, path_list), "vec.pkl")
+    joblib.dump((vec_list, path_list), "vec_25_07-45-59.pkl")
 
 
 if __name__ == '__main__':

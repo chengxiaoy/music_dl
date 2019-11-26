@@ -1,18 +1,26 @@
-import faiss
+# import faiss
 import numpy as np
 import joblib
 from model.siamese_model import *
-from util.audio_processor import compute_melgram
+from util.audio_processor import compute_melgram, compute_melgram_multi_slice
 import torch
-
+from sklearn.neighbors import BallTree
+from util.download_music163 import dowload_song
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-music_path = '../audio/data1138/22777398.mp3'
+
+
+
+song_id = 36270426
+
+music_path = dowload_song(song_id)
 # music_path1 = '../util/149791.mp3'
 # music_path2 = '../util/392907.mp3'
 
 model = SiameseModel()
-model.load_state_dict(torch.load("../data/music_siamese.pth", map_location='cpu'))
+model = nn.DataParallel(model)
+model.load_state_dict(torch.load("music_siamese_50000Nov26_02-52-18.pth", map_location='cpu'))
+model = model.module
 model.to(device)
 model.eval()
 
@@ -29,12 +37,14 @@ recall_num = 4
 features, paths = joblib.load('vec.pkl')
 features = np.array(features)
 
-index = get_index(features)
+# index = get_index(features)
+tree = BallTree(features)
+
 # feature1 = model.forward_once(torch.Tensor(compute_melgram(music_path1)).float()).detach().numpy()
 # feature2 = model.forward_once(torch.Tensor(compute_melgram(music_path2)).float()).detach().numpy()
-feature = model.forward_once(torch.Tensor(compute_melgram(music_path)).float()).detach().numpy()
-D, I = index.search(np.array(feature, dtype=np.float32), recall_num)
-#
+feature = model.forward_once(torch.Tensor(compute_melgram_multi_slice(music_path)[0]).float()).detach().numpy()
+# D, I = index.search(np.array(feature, dtype=np.float32), recall_num)
+D, I = tree.query(feature, 4)
 # for i, (s_d, s_i) in enumerate(zip(D, I)):
 #     print(s_d[1:])
 #     for k in range(1, 4):
