@@ -24,7 +24,7 @@ class SiameseModel(nn.Module):
 
     def forward_once(self, input):
         output = self.backbone(input)
-        output = output.reshape(1,-1)
+        output = output.squeeze(-1).squeeze(-1)
         output = self.normal(output)
         return output
 
