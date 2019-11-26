@@ -1,16 +1,22 @@
 import torch
 from torch import nn
-from model.cnn_choi import CNN_Choi_Slim
+from model.cnn_choi import CNN_Choi_Slim,CNN_Choi
 from util import audio_processor
 from torch.nn import functional
+from torchvision.models import resnet34
 
 
 class SiameseModel(nn.Module):
 
     def __init__(self):
         super(SiameseModel, self).__init__()
-        self.backbone = CNN_Choi_Slim()
-        self.ll = nn.Linear(512, 100)
+        model = resnet34(pretrained=True)
+        model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        model = nn.Sequential(*list(model.children())[:-1])
+        # self.backbone = CNN_Choi()
+        self.backbone = model
+
+        self.ll = nn.Linear(1024, 100)
         self.relu = nn.ReLU()
         self.ll2 = nn.Linear(100, 1)
         self.normal = nn.functional.normalize
@@ -18,6 +24,7 @@ class SiameseModel(nn.Module):
 
     def forward_once(self, input):
         output = self.backbone(input)
+        output = output.squeeze(-1).squeeze(-1)
         output = self.normal(output)
         return output
 

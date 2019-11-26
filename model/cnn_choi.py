@@ -1,7 +1,7 @@
 from torch.nn import Module
 from torch import nn
 import torch
-
+from torchvision.models import resnet34
 from util.audio_processor import *
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -77,7 +77,7 @@ class CNN_Choi(Module):
 
         x = self.conv6(x)
         x = x.view(x.size(0), -1)
-        x = self.fc(x)
+        # x = self.fc(x)
         return x
 
 
@@ -122,7 +122,6 @@ class CNN_Choi_Slim(Module):
         self.maxpool5 = nn.MaxPool2d((4, 4))
         self.hidden = nn.Linear(64, 256)
 
-
     def forward(self, x):
         # x = x.permute(0, 2, 1, 3)
         # x = self.bn(x)
@@ -155,7 +154,6 @@ class CNN_Choi_Slim(Module):
 
         x = x.view(x.size(0), -1)
         x = self.hidden(x)
-
 
         # x = self.fc(x)
         return x
@@ -240,10 +238,14 @@ class RCNN_Choi(Module):
 
 
 if __name__ == '__main__':
-    model = RCNN_Choi()
+    # model = CNN_Choi()
+
+    model = resnet34(pretrained=True)
+    model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+    model = nn.Sequential(*list(model.children())[:-1])
     audio_path = "../audio/bensound-actionable.mp3"
     mel_spectrum = compute_melgram(audio_path)
     mel_spectrum = torch.from_numpy(mel_spectrum).float()
 
-    output = model(mel_spectrum)
+    output = model(mel_spectrum).reshape(1,-1)
     print(output.shape)

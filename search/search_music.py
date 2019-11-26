@@ -7,7 +7,7 @@ import torch
 
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-music_path = '../audio/data27075/541511427.mp3'
+music_path = '../audio/data1138/22777398.mp3'
 # music_path1 = '../util/149791.mp3'
 # music_path2 = '../util/392907.mp3'
 
@@ -24,7 +24,7 @@ def get_index(feature):
     return index
 
 
-recall_num = 4000
+recall_num = 4
 
 features, paths = joblib.load('vec.pkl')
 features = np.array(features)
@@ -42,7 +42,7 @@ D, I = index.search(np.array(feature, dtype=np.float32), recall_num)
 #         #     break
 #         print("search for {}<===>{}".format(paths[i], paths[s_i[k]]))
 
-print(D[0][1000:])
+print(D[0])
 print(paths[I[0][0]])
 print(paths[I[0][1]])
 print(paths[I[0][2]])

@@ -6,9 +6,12 @@ import warnings
 import joblib
 import os
 from glob import glob
+from util.audio_dataset import get_mel
+from torch import nn
+from tqdm import tqdm
 
 warnings.filterwarnings('ignore')
-device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class MusicDataset(Dataset):
@@ -26,7 +29,7 @@ class MusicDataset(Dataset):
             if self.multi:
                 return audio_processor.compute_melgram_multi_slice(self.music_paths[index]), self.music_paths[index]
             else:
-                return torch.Tensor(audio_processor.compute_melgram(self.music_paths[index])).float(), self.music_paths[index]
+                return torch.Tensor(get_mel(self.music_paths[index])[0]).float(), self.music_paths[index]
         except Exception as e:
             print(e)
             return None, self.music_paths[index]
@@ -39,8 +42,11 @@ def collate_double(batch):
 
 
 def full_index_v1(paths):
+    # load multi gpu weights
     model = SiameseModel()
-    model.load_state_dict(torch.load("music_siamese.pth"))
+    model = nn.DataParallel(model)
+    model.load_state_dict(torch.load("music_siamese_50000Nov26_02-52-18.pth"))
+    model = model.module
     model.to(device)
     model.eval()
 
@@ -49,7 +55,7 @@ def full_index_v1(paths):
     vec_list = []
     path_list = []
 
-    for mels, paths in data_loader:
+    for mels, paths in tqdm(data_loader):
         for mel, path in zip(mels, paths):
             if mel is None:
                 continue
@@ -63,6 +69,6 @@ def full_index_v1(paths):
 
 if __name__ == '__main__':
     music_path = "./audio/"
-    audio_paths = glob(music_path + "data*/*.mp3")
+    audio_paths = glob(music_path + "*/*.mp3")
     print(len(audio_paths))
     full_index_v1(audio_paths)
