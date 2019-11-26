@@ -88,30 +88,31 @@ def get_gtzan_datasets(version=1):
     return audio_datasets
 
 
+def get_mel(audio_path):
+    mel_path = audio_path.replace(".mp3", ".pkl")
+    if os.path.exists(mel_path):
+        melgram_list = joblib.load(mel_path)
+    else:
+        melgram_list = compute_melgram_multi_slice(audio_path)
+    return melgram_list
+
+
 class SiameseDataSet(Dataset):
     def __init__(self, audio_infos):
         self.audio_infos = audio_infos
-
-    def get_mel(self, audio_path):
-        mel_path = audio_path.replace(".mp3", ".pkl")
-        if os.path.exists(mel_path):
-            melgram_list = joblib.load(mel_path)
-        else:
-            melgram_list = compute_melgram_multi_slice(audio_path)
-        return melgram_list
 
     def __getitem__(self, index):
         while True:
             try:
                 if index % 2 == 0:
                     audio_path, audio_label = self.audio_infos[(index // 2) % len(self.audio_infos)]
-                    melgram1, melgram2 = sample(self.get_mel(audio_path), 2)
+                    melgram1, melgram2 = sample(get_mel(audio_path), 2)
                     # print("index {} melgram===>{}".format(index, audio_path))
                     return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([1])
                 else:
                     audio_info1, audio_info2 = sample(self.audio_infos, 2)
                     audio_path1, audio_path2 = audio_info1[0], audio_info2[0]
-                    melgram1, melgram2 = choice(self.get_mel(audio_path1)), choice(self.get_mel(audio_path2))
+                    melgram1, melgram2 = choice(get_mel(audio_path1)), choice(get_mel(audio_path2))
                     # print("index {} melgram===>{},{}".format(index, audio_path1, audio_path2))
                     return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([0])
             except Exception as e:
@@ -125,7 +126,7 @@ class SiameseDataSet(Dataset):
 
 def get_siamese_datasets():
     genres_path = "./audio/"
-    audio_paths = glob(genres_path + "data*/*.mp3")
+    audio_paths = glob(genres_path + "*/*.mp3")
     audio_paths = sorted(audio_paths)
     audio_paths = audio_paths[:50000]
     genres_list = list(set([x.split('/')[-2] for x in audio_paths]))
