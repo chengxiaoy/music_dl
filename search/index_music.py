@@ -45,7 +45,7 @@ def full_index_v1(paths):
     # load multi gpu weights
     model = SiameseModel()
     model = nn.DataParallel(model)
-    model.load_state_dict(torch.load("music_siames_50000Nov25_07-45-59.pth"))
+    model.load_state_dict(torch.load("music_siamese_50000Nov25_07-45-59.pth"))
     model = model.module
     model.to(device)
     model.eval()
