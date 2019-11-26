@@ -8,6 +8,7 @@ import os
 from glob import glob
 from util.audio_dataset import get_mel
 from torch import nn
+from tqdm import tqdm
 
 warnings.filterwarnings('ignore')
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -41,7 +42,6 @@ def collate_double(batch):
 
 
 def full_index_v1(paths):
-
     # load multi gpu weights
     model = SiameseModel()
     model = nn.DataParallel(model)
@@ -55,7 +55,7 @@ def full_index_v1(paths):
     vec_list = []
     path_list = []
 
-    for mels, paths in data_loader:
+    for mels, paths in tqdm(data_loader):
         for mel, path in zip(mels, paths):
             if mel is None:
                 continue
