@@ -148,7 +148,7 @@ if __name__ == '__main__':
         x: DataLoader(siamese_datasets[x], batch_size=64, pin_memory=True, shuffle=True, num_workers=16) for x in
         ['train', 'val']}
 
-    model = SiameseModel()
+    model = SiameseModel(rnn=True)
     model = model.cuda(device_ids[0])
     model = nn.DataParallel(model, device_ids=device_ids)
     # model = model.to(device)
