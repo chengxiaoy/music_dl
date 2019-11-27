@@ -51,8 +51,8 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
                 # input2s = input2s.to(device)
                 # labels = labels.to(device)
 
-                input1s = input1s.cuda(device_ids[0]), torch.zeros(2, 64, 512).cuda(device_ids[0])
-                input2s = input2s.cuda(device_ids[0]), torch.zeros(2, 64, 512).cuda(device_ids[0])
+                input1s = input1s.cuda(device_ids[0]), torch.zeros(2, len(labels), 512).cuda(device_ids[0])
+                input2s = input2s.cuda(device_ids[0]), torch.zeros(2, len(labels), 512).cuda(device_ids[0])
                 labels = labels.cuda(device_ids[0])
                 labels = labels.squeeze()
 

@@ -11,18 +11,20 @@ device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
 
 
-song_id = 29561077
+song_id = 29593213
 
-music_path = dowload_song(song_id)
+path = './audio/data'+str(song_id//20000)+"/"+str(song_id)+'.mp3'
+
+# music_path = dowload_song(song_id)
 # music_path1 = '../util/149791.mp3'
 # music_path2 = '../util/392907.mp3'
 
-model = SiameseModel()
-model = nn.DataParallel(model)
-model.load_state_dict(torch.load("music_siamese_50000Nov26_02-52-18.pth", map_location='cpu'))
-model = model.module
-model.to(device)
-model.eval()
+# model = SiameseModel()
+# model = nn.DataParallel(model)
+# model.load_state_dict(torch.load("music_siamese_50000Nov26_02-52-18.pth", map_location='cpu'))
+# model = model.module
+# model.to(device)
+# model.eval()
 
 
 def get_index(feature):
@@ -36,14 +38,13 @@ recall_num = 4
 
 features, paths = joblib.load('vec.pkl')
 features = np.array(features)
-
 index = get_index(features)
 # tree = BallTree(features)
 
 # feature1 = model.forward_once(torch.Tensor(compute_melgram(music_path1)).float()).detach().numpy()
 # feature2 = model.forward_once(torch.Tensor(compute_melgram(music_path2)).float()).detach().numpy()
-feature = model.forward_once(torch.Tensor(compute_melgram_multi_slice(music_path)[0]).float()).detach().numpy()
-D, I = index.search(np.array(feature, dtype=np.float32), recall_num)
+# feature = model.forward_once(torch.Tensor(compute_melgram_multi_slice(music_path)[0]).float()).detach().numpy()
+D, I = index.search(np.array([features[paths.index(path)]], dtype=np.float32), recall_num)
 # D, I = tree.query(feature, 4)
 # for i, (s_d, s_i) in enumerate(zip(D, I)):
 #     print(s_d[1:])
