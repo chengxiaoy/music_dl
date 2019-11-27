@@ -10,18 +10,18 @@ class SiameseModel(nn.Module):
 
     def __init__(self):
         super(SiameseModel, self).__init__()
-        # model = resnet34(pretrained=True)
-        # model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        # model.avgpool = nn.AdaptiveAvgPool2d(1)
-        # model = nn.Sequential(*list(model.children())[:-1])
-        self.backbone = CNN_Choi()
-        # self.backbone = model
+        model = resnet34(pretrained=True)
+        model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        model.avgpool = nn.AdaptiveAvgPool2d(1)
+        model = nn.Sequential(*list(model.children())[:-1])
+        self.backbone = model
+        # self.backbone = CNN_Choi()
 
-        self.ll = nn.Linear(1024, 100)
-        self.relu = nn.ReLU()
-        self.ll2 = nn.Linear(100, 1)
-        self.normal = nn.functional.normalize
-        self.sigmod = nn.Sigmoid()
+        # self.ll = nn.Linear(1024, 100)
+        # self.relu = nn.ReLU()
+        # self.ll2 = nn.Linear(100, 1)
+        # self.normal = nn.functional.normalize
+        # self.sigmod = nn.Sigmoid()
 
     def forward_once(self, input):
         output = self.backbone(input)

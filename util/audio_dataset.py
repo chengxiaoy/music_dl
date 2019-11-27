@@ -124,7 +124,41 @@ class SiameseDataSet(Dataset):
         return len(self.audio_infos) * 2
 
 
-def get_siamese_datasets():
+class SiameseNeighborDataSet(Dataset):
+    def __init__(self, audio_infos):
+        self.audio_infos = audio_infos
+
+    def __getitem__(self, index):
+        while True:
+            try:
+                if index % 2 == 0:
+                    audio_path, audio_label = self.audio_infos[(index // 2) % len(self.audio_infos)]
+                    melgram = choice(get_mel(audio_path))
+                    melgram1, melgram2 = split_n_melgram(melgram)
+                    # print("index {} melgram===>{}".format(index, audio_path))
+                    return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([1])
+                else:
+                    audio_info1, audio_info2 = sample(self.audio_infos, 2)
+                    audio_path1, audio_path2 = audio_info1[0], audio_info2[0]
+                    melgram1_, melgram2_ = choice(get_mel(audio_path1)), choice(get_mel(audio_path2))
+                    melgram1, _ = split_n_melgram(melgram1_)
+                    melgram2, _ = split_n_melgram(melgram2_)
+                    # print("index {} melgram===>{},{}".format(index, audio_path1, audio_path2))
+                    return torch.Tensor(melgram1[0]).float(), torch.Tensor(melgram2[0]).float(), torch.Tensor([0])
+            except Exception as e:
+                # print("get item {} error {}".format(index, e))
+                # 读取音频可能报错
+                return self.__getitem__(index + 2)
+
+    def __len__(self):
+        return len(self.audio_infos) * 2
+
+
+def split_n_melgram(melgram):
+    return melgram[:, :, :, :863], melgram[:, :, :, 863:]
+
+
+def get_siamese_datasets(pair=True):
     genres_path = "./audio/"
     audio_paths = glob(genres_path + "*/*.mp3")
     audio_paths = sorted(audio_paths)
@@ -148,7 +182,11 @@ def get_siamese_datasets():
 
     train_audio_infos, test_audio_infos = train_test_split(audio_infos)
 
-    audio_datasets = {'train': SiameseDataSet(train_audio_infos), 'val': SiameseDataSet(test_audio_infos)}
+    if pair:
+        audio_datasets = {'train': SiameseNeighborDataSet(train_audio_infos),
+                          'val': SiameseNeighborDataSet(test_audio_infos)}
+    else:
+        audio_datasets = {'train': SiameseDataSet(train_audio_infos), 'val': SiameseDataSet(test_audio_infos)}
     return audio_datasets
 
 
