@@ -34,7 +34,7 @@ class SiameseModel(nn.Module):
     def forward_once(self, input):
         output = self.backbone(input)
         if self.rnn:
-            h0 = torch.zeros(2, 1, 512)
+            h0 = torch.zeros(2, 32, 512)
             output = self.pool(output).squeeze(dim=2)
             rnn_in = output.permute([2, 0, 1])
             output, hn = self.gru(rnn_in, h0)
