@@ -6,12 +6,12 @@ import warnings
 import joblib
 import os
 from glob import glob
-from util.audio_dataset import get_mel
+from util.audio_dataset import get_mel,split_n_melgram
 from torch import nn
 from tqdm import tqdm
 
 warnings.filterwarnings('ignore')
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 
 class MusicDataset(Dataset):
@@ -29,7 +29,7 @@ class MusicDataset(Dataset):
             if self.multi:
                 return audio_processor.compute_melgram_multi_slice(self.music_paths[index]), self.music_paths[index]
             else:
-                return torch.Tensor(get_mel(self.music_paths[index])[0]).float(), self.music_paths[index]
+                return torch.Tensor(split_n_melgram(get_mel(self.music_paths[index])[0])[0]).float(), self.music_paths[index]
         except Exception as e:
             print(e)
             return None, self.music_paths[index]
@@ -45,7 +45,7 @@ def full_index_v1(paths):
     # load multi gpu weights
     model = SiameseModel()
     model = nn.DataParallel(model)
-    model.load_state_dict(torch.load("music_siamese_50000Nov25_07-45-59.pth"))
+    model.load_state_dict(torch.load("music_siamese_50000Nov27_02-38-26.pth"))
     model = model.module
     model.to(device)
     model.eval()
@@ -64,7 +64,7 @@ def full_index_v1(paths):
             vec_list.append(vec)
             path_list.append(path)
             print("extract vect from {}".format(path))
-    joblib.dump((vec_list, path_list), "vec_25_07-45-59.pkl")
+    joblib.dump((vec_list, path_list), "vec_27_02-38-26.pkl")
 
 
 if __name__ == '__main__':
