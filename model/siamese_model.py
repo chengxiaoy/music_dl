@@ -5,6 +5,7 @@ from util import audio_processor
 from torch.nn import functional
 from torchvision.models import resnet34
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class SiameseModel(nn.Module):
 
@@ -34,7 +35,7 @@ class SiameseModel(nn.Module):
     def forward_once(self, input):
         output = self.backbone(input)
         if self.rnn:
-            h0 = torch.zeros(2, 32, 512)
+            h0 = torch.zeros(2, 32, 512).to(device=device)
             output = self.pool(output).squeeze(dim=2)
             rnn_in = output.permute([2, 0, 1])
             output, hn = self.gru(rnn_in, h0)
