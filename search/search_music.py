@@ -11,7 +11,7 @@ device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
 
 
-song_id = 306845
+song_id = 29561077
 
 music_path = dowload_song(song_id)
 # music_path1 = '../util/149791.mp3'

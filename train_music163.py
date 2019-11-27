@@ -149,9 +149,9 @@ if __name__ == '__main__':
         ['train', 'val']}
 
     model = SiameseModelRNN()
-    model = model.cuda(device_ids[0])
-    model = nn.DataParallel(model, device_ids=device_ids)
-    # model = model.to(device)
+    # model = model.cuda(device_ids[0])
+    # model = nn.DataParallel(model, device_ids=device_ids)
+    model = model.to(device)
 
     criterion = loss.ContrastiveLoss(margin=0.7)
     optimizer = Adam(model.parameters(), lr=0.001)
