@@ -7,6 +7,7 @@ from torchvision.models import resnet34
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+
 class SiameseModel(nn.Module):
 
     def __init__(self, rnn=False):
@@ -14,15 +15,9 @@ class SiameseModel(nn.Module):
         model = resnet34(pretrained=True)
         model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         model.avgpool = nn.AdaptiveAvgPool2d(1)
-        self.rnn = rnn
-        if not rnn:
-            model = nn.Sequential(*list(model.children())[:-1])
-        else:
-            model = nn.Sequential(*list(model.children())[:-2])
+        model = nn.Sequential(*list(model.children())[:-1])
         self.backbone = model
         self.normal = nn.functional.normalize
-
-        self.gru = nn.GRU(512, 512, bidirectional=True)
 
         # self.backbone = CNN_Choi()
 
@@ -53,22 +48,33 @@ class SiameseModel(nn.Module):
 
         return output1, output2
 
-        # (x1-x2)**2
-        # sub = torch.sub(output1, output2)
-        # mul1 = torch.mul(sub, sub)
-        #
-        # # (x1**2-x2**2)
-        # mul2 = torch.sub(torch.mul(output1, output1), torch.mul(output2, output2))
-        #
-        # x = torch.cat([mul1, mul2], 1)
-        # x = x.view(x.size(0), -1)
-        #
-        # x = self.ll(x)
-        # x = self.relu(x)
-        #
-        # x = self.ll2(x)
-        # x = self.sigmod(x)
-        # return x
+
+class SiameseModelRNN(nn.Module):
+    def __init__(self):
+        super(SiameseModelRNN, self).__init__()
+        model = resnet34(pretrained=True)
+        model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        model.avgpool = nn.AdaptiveAvgPool2d(1)
+        model = nn.Sequential(*list(model.children())[:-2])
+        self.gru = nn.GRU(512, 512, bidirectional=True)
+        self.backbone = model
+        self.normal = nn.functional.normalize
+
+    def forward_once_rnn(self, input):
+        cnn_input, h0 = input
+        output = self.backbone(cnn_input)
+        output = self.pool(output).squeeze(dim=2)
+        rnn_in = output.permute([2, 0, 1])
+        output, hn = self.gru(rnn_in, h0)
+        b = hn.shape[1]
+        hn = hn.permute([1, 0, 2]).reshape(b, -1)
+        return self.normal(hn)
+
+    def forward(self, input1, input2):
+        output1 = self.forward_once_rnn(input1)
+        output2 = self.forward_once_rnn(input2)
+
+        return output1, output2
 
 
 if __name__ == '__main__':
