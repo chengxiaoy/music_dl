@@ -12,6 +12,9 @@ import torch.nn.functional as F
 from tqdm import tqdm
 import warnings
 import torch
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 warnings.filterwarnings('ignore')
 
