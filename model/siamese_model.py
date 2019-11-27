@@ -46,20 +46,19 @@ class SiameseModelRNN(nn.Module):
         model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         model.avgpool = nn.AdaptiveAvgPool2d(1)
         model = nn.Sequential(*list(model.children())[:-2])
-        self.gru = nn.GRU(512, 512, bidirectional=True)
+        self.gru = nn.GRU(512, 512, batch_first=True, bidirectional=True)
         self.backbone = model
         self.normal = nn.functional.normalize
         self.pool = nn.MaxPool2d((3, 1))
-
 
     def forward_once_rnn(self, input):
         cnn_input, h0 = input
         output = self.backbone(cnn_input)
         output = self.pool(output).squeeze(dim=2)
-        rnn_in = output.permute([2, 0, 1])
+        rnn_in = output.permute([0, 2, 1])
         output, hn = self.gru(rnn_in, h0)
         b = hn.shape[1]
-        hn = hn.permute([1, 0, 2]).reshape(b, -1)
+        hn = hn.reshape(b, -1)
         return self.normal(hn)
 
     def forward(self, input1, input2):
@@ -70,8 +69,9 @@ class SiameseModelRNN(nn.Module):
 
 
 if __name__ == '__main__':
-    model = SiameseModel(rnn=True)
+    model = SiameseModelRNN()
 
     music_clip = audio_processor.compute_melgram("../audio/Fabel-不生不死.mp3")
-    x = model(torch.Tensor(music_clip).float(), torch.Tensor(music_clip).float())
+    x = model((torch.Tensor(music_clip).float(), torch.zeros(2, 1, 512)),
+              (torch.Tensor(music_clip).float(), torch.zeros(2, 1, 512)))
     print(x)
