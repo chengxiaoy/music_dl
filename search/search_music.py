@@ -1,4 +1,4 @@
-# import faiss
+import faiss
 import numpy as np
 import joblib
 from model.siamese_model import *
@@ -11,7 +11,7 @@ device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
 
 
-song_id = 36270426
+song_id = 306845
 
 music_path = dowload_song(song_id)
 # music_path1 = '../util/149791.mp3'
@@ -37,14 +37,14 @@ recall_num = 4
 features, paths = joblib.load('vec.pkl')
 features = np.array(features)
 
-# index = get_index(features)
-tree = BallTree(features)
+index = get_index(features)
+# tree = BallTree(features)
 
 # feature1 = model.forward_once(torch.Tensor(compute_melgram(music_path1)).float()).detach().numpy()
 # feature2 = model.forward_once(torch.Tensor(compute_melgram(music_path2)).float()).detach().numpy()
 feature = model.forward_once(torch.Tensor(compute_melgram_multi_slice(music_path)[0]).float()).detach().numpy()
-# D, I = index.search(np.array(feature, dtype=np.float32), recall_num)
-D, I = tree.query(feature, 4)
+D, I = index.search(np.array(feature, dtype=np.float32), recall_num)
+# D, I = tree.query(feature, 4)
 # for i, (s_d, s_i) in enumerate(zip(D, I)):
 #     print(s_d[1:])
 #     for k in range(1, 4):
