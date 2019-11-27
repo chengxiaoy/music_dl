@@ -15,12 +15,14 @@ class SiameseModel(nn.Module):
         model.avgpool = nn.AdaptiveAvgPool2d(1)
         model = nn.Sequential(*list(model.children())[:-1])
         self.backbone = model
+        self.normal = nn.functional.normalize
+
+
         # self.backbone = CNN_Choi()
 
         # self.ll = nn.Linear(1024, 100)
         # self.relu = nn.ReLU()
         # self.ll2 = nn.Linear(100, 1)
-        # self.normal = nn.functional.normalize
         # self.sigmod = nn.Sigmoid()
 
     def forward_once(self, input):
