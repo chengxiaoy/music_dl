@@ -10,7 +10,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class SiameseModel(nn.Module):
 
-    def __init__(self, rnn=False):
+    def __init__(self):
         super(SiameseModel, self).__init__()
         model = resnet34(pretrained=True)
         model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
@@ -21,7 +21,6 @@ class SiameseModel(nn.Module):
 
         # self.backbone = CNN_Choi()
 
-        self.pool = nn.MaxPool2d((3, 1))
         self.ll = nn.Linear(1024, 100)
         self.relu = nn.ReLU()
         self.ll2 = nn.Linear(100, 1)
@@ -29,15 +28,6 @@ class SiameseModel(nn.Module):
 
     def forward_once(self, input):
         output = self.backbone(input)
-        if self.rnn:
-            h0 = torch.zeros(2, 32, 512).to(device=device)
-            output = self.pool(output).squeeze(dim=2)
-            rnn_in = output.permute([2, 0, 1])
-            output, hn = self.gru(rnn_in, h0)
-            b = hn.shape[1]
-            hn = hn.permute([1, 0, 2]).reshape(b, -1)
-            return hn
-
         output = output.squeeze(-1).squeeze(-1)
         output = self.normal(output)
         return output
@@ -59,6 +49,8 @@ class SiameseModelRNN(nn.Module):
         self.gru = nn.GRU(512, 512, bidirectional=True)
         self.backbone = model
         self.normal = nn.functional.normalize
+        self.pool = nn.MaxPool2d((3, 1))
+
 
     def forward_once_rnn(self, input):
         cnn_input, h0 = input
