@@ -21,10 +21,10 @@ class SiameseModel(nn.Module):
 
         # self.backbone = CNN_Choi()
 
-        self.ll = nn.Linear(1024, 100)
-        self.relu = nn.ReLU()
-        self.ll2 = nn.Linear(100, 1)
-        self.sigmod = nn.Sigmoid()
+        # self.ll = nn.Linear(1024, 100)
+        # self.relu = nn.ReLU()
+        # self.ll2 = nn.Linear(100, 1)
+        # self.sigmod = nn.Sigmoid()
 
     def forward_once(self, input):
         output = self.backbone(input)
