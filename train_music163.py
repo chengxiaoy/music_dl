@@ -42,14 +42,26 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, con
             sum_label = torch.zeros(0)
             sum_preds = torch.zeros(0)
             for input1s, input2s, labels in tqdm(dataloaders[phase]):
-                if not config.multi_gpu:
-                    input1s = input1s.to(config.device)
-                    input2s = input2s.to(config.device)
-                    labels = labels.to(config.device)
+
+                if config.multi_gpu:
+                    if not config.model_type == 'cnn':
+                        input1s = input1s.cuda(config.device_ids[0])
+                        input2s = input2s.cuda(config.device_ids[0])
+                        labels = labels.cuda(config.device_ids[0])
+                    else:
+                        input1s = input1s.cuda(config.device_ids[0]), model.init_h0().cuda(config.device_ids[0])
+                        input2s = input2s.cuda(config.device_ids[0]), model.init_h0().cuda(config.device_ids[0])
+                        labels = labels.cuda(config.device_ids[0])
+
                 else:
-                    input1s = input1s.cuda(config.device_ids[0]), model.init_h0().cuda(config.device_ids[0])
-                    input2s = input2s.cuda(config.device_ids[0]), model.init_h0().cuda(config.device_ids[0])
-                    labels = labels.cuda(config.device_ids[0])
+                    if not config.model_type == 'cnn':
+                        input1s = input1s.to(config.device)
+                        input2s = input2s.to(config.device)
+                        labels = labels.to(config.device)
+                    else:
+                        input1s = input1s.to(config.device), model.init_h0().to(config.device)
+                        input2s = input2s.to(config.device), model.init_h0().to(config.device)
+                        labels = labels.to(config.device)
                 labels = labels.squeeze()
 
                 sum_label = torch.cat((sum_label, labels.cpu()))
