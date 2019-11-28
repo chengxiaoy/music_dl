@@ -6,7 +6,7 @@ import copy
 from tensorboardX import SummaryWriter
 from datetime import datetime
 from model.cnn_choi import *
-from model.siamese_model import SiameseModel,SiameseModelRNN
+from model.siamese_model import SiameseModel, SiameseModelRNN
 from torch.optim import Adam
 import torch.nn.functional as F
 from tqdm import tqdm
@@ -22,7 +22,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 device_ids = [0, 1]
 
 
-def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num_epochs=150):
+def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, config, num_epochs=150):
     since = time.time()
     val_acc_history = []
     saved_model_name = "music_siamese_50000" + datetime.now().strftime('%b%d_%H-%M-%S') + ".pth"
@@ -51,8 +51,8 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
                 # input2s = input2s.to(device)
                 # labels = labels.to(device)
 
-                input1s = input1s.cuda(device_ids[0]), torch.zeros(2, len(labels), 512).cuda(device_ids[0])
-                input2s = input2s.cuda(device_ids[0]), torch.zeros(2, len(labels), 512).cuda(device_ids[0])
+                input1s = input1s.cuda(device_ids[0]), model.init_h0().cuda(device_ids[0])
+                input2s = input2s.cuda(device_ids[0]), model.init_h0().cuda(device_ids[0])
                 labels = labels.cuda(device_ids[0])
                 labels = labels.squeeze()
 
@@ -68,8 +68,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
                     # _, preds = outputs.topk(1, 1, True, True)
                     # _, preds = torch.max(outputs, 1)
 
-                    threshold = 0.2
-                    preds = F.pairwise_distance(output1s, output2s) < threshold
+                    preds = F.pairwise_distance(output1s, output2s) < config.evalue_thr
                     sum_preds = torch.cat((sum_preds, preds.cpu().float()))
 
                     # backward + optimize only if in training phase
@@ -136,19 +135,24 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, num
 
 
 class Config():
-    train_batch_size = 16
-    val_batch_size = 16
+    train_batch_size = 64
+    val_batch_size = 64
+    model_type = 'crnn'
+    evalue_thr = 0.2
+    dataset_size = 50000
 
 
 if __name__ == '__main__':
+    config = Config()
     writer = SummaryWriter(logdir=os.path.join("../tb_log", "163muisc_" + datetime.now().strftime('%b%d_%H-%M-%S')))
 
-    siamese_datasets = audio_dataset.get_siamese_datasets()
+    siamese_datasets = audio_dataset.get_siamese_datasets(config.dataset_size, pair=True)
     siamese_dataloaders = {
-        x: DataLoader(siamese_datasets[x], batch_size=64,  shuffle=True, num_workers=16) for x in
+        x: DataLoader(siamese_datasets[x], batch_size=config.train_batch_size, shuffle=True, num_workers=16,
+                      drop_last=True) for x in
         ['train', 'val']}
 
-    model = SiameseModelRNN()
+    model = SiameseModelRNN(batch_size=config.train_batch_size)
     # model = model.cuda(device_ids[0])
     # model = nn.DataParallel(model, device_ids=device_ids)
     model = model.to(device)

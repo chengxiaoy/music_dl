@@ -40,13 +40,18 @@ class SiameseModel(nn.Module):
 
 
 class SiameseModelRNN(nn.Module):
-    def __init__(self):
+    def __init__(self, batch_size=64):
         super(SiameseModelRNN, self).__init__()
         model = resnet34(pretrained=True)
         model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         model.avgpool = nn.AdaptiveAvgPool2d(1)
         model = nn.Sequential(*list(model.children())[:-2])
-        self.gru = nn.GRU(512, 512, batch_first=True, bidirectional=True)
+
+        self.batch_size = batch_size
+        self.gru_num_layers = 2
+        self.gru_bidirectional = True
+        self.gru = nn.GRU(512, 512, num_layers=self.gru_num_layers, batch_first=True,
+                          bidirectional=self.gru_bidirectional)
         self.backbone = model
         self.normal = nn.functional.normalize
         self.pool = nn.MaxPool2d((3, 1))
@@ -68,11 +73,15 @@ class SiameseModelRNN(nn.Module):
 
         return output1, output2
 
+    def init_h0(self):
+        num_directions = 2 if self.gru_bidirectional else 1
+        return torch.zeros(self.gru_num_layers * num_directions, self.batch_size, 512)
+
 
 if __name__ == '__main__':
-    model = SiameseModelRNN()
+    model = SiameseModelRNN(batch_size=1)
 
     music_clip = audio_processor.compute_melgram("../audio/Fabel-不生不死.mp3")
-    x = model((torch.Tensor(music_clip).float(), torch.zeros(2, 1, 512)),
-              (torch.Tensor(music_clip).float(), torch.zeros(2, 1, 512)))
+    x = model((torch.Tensor(music_clip).float(), model.init_h0()),
+              (torch.Tensor(music_clip).float(), model.init_h0()))
     print(x)

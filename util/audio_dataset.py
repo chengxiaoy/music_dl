@@ -158,11 +158,11 @@ def split_n_melgram(melgram):
     return melgram[:, :, :, :683], melgram[:, :, :, 683:]
 
 
-def get_siamese_datasets(pair=True):
+def get_siamese_datasets(size, pair=True):
     genres_path = "./audio/"
     audio_paths = glob(genres_path + "*/*.mp3")
     audio_paths = sorted(audio_paths)
-    audio_paths = audio_paths[:10000]
+    audio_paths = audio_paths[:size]
     genres_list = list(set([x.split('/')[-2] for x in audio_paths]))
 
     audio_infos = [(x, genres_list.index(x.split('/')[-2])) for x in audio_paths]
