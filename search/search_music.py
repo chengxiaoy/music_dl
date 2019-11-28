@@ -6,26 +6,24 @@ from util.audio_processor import compute_melgram, compute_melgram_multi_slice
 import torch
 from sklearn.neighbors import BallTree
 from util.download_music163 import dowload_song
+
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
+song_id = 28838040
 
-
-
-song_id = 308299
-
-path = './audio/data'+str(song_id//20000)+"/"+str(song_id)+'.mp3'
-music_path = '../audio/data'+str(song_id//20000)+"/"+str(song_id)+'.mp3'
+path = './audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
+music_path = '../audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
 
 # music_path = dowload_song(song_id)
 # music_path1 = '../util/149791.mp3'
 # music_path2 = '../util/392907.mp3'
 
-model = SiameseModel()
-model = nn.DataParallel(model)
-model.load_state_dict(torch.load("music_siamese_50000Nov26_02-52-18.pth", map_location='cpu'))
-model = model.module
-model.to(device)
-model.eval()
+# model = SiameseModel()
+# model = nn.DataParallel(model)
+# model.load_state_dict(torch.load("music_siamese_50000Nov27_02-38-26.pth", map_location='cpu'))
+# model = model.module
+# model.to(device)
+# model.eval()
 
 
 def get_index(feature):
@@ -37,7 +35,8 @@ def get_index(feature):
 
 recall_num = 10
 
-features, paths = joblib.load('vec.pkl')
+features, paths = joblib.load('vec_27_02-38-26.pkl')
+# features, paths = joblib.load('vec.pkl')
 features = np.array(features)
 index = get_index(features)
 # tree = BallTree(features)

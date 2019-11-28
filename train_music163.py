@@ -154,6 +154,6 @@ if __name__ == '__main__':
     model = model.to(device)
 
     criterion = loss.ContrastiveLoss(margin=2.0)
-    optimizer = Adam(model.parameters(), lr=0.01)
+    optimizer = Adam(model.parameters(), lr=0.0001)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=6, factor=0.1, verbose=True)
     train_model(model, siamese_dataloaders, criterion, optimizer, writer, scheduler, num_epochs=100)
