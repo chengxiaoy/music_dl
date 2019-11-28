@@ -14,6 +14,13 @@ song_id = 28838040
 path = './audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
 music_path = '../audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
 
+song_id1 = 308299
+path1 = './audio/data' + str(song_id // 20000) + "/" + str(song_id1) + '.mp3'
+
+music_path1 = '../audio/data' + str(song_id // 20000) + "/" + str(song_id1) + '.mp3'
+
+
+
 # music_path = dowload_song(song_id)
 # music_path1 = '../util/149791.mp3'
 # music_path2 = '../util/392907.mp3'
@@ -45,6 +52,7 @@ index = get_index(features)
 # feature2 = model.forward_once(torch.Tensor(compute_melgram(music_path2)).float()).detach().numpy()
 # feature_ = model.forward_once(torch.Tensor(compute_melgram_multi_slice(music_path)[0]).float()).detach().numpy()
 feature = np.array([features[paths.index(path)]])
+feature1 = np.array([features[paths.index(path1)]])
 D, I = index.search(feature, recall_num)
 # D, I = tree.query(feature, 4)
 # for i, (s_d, s_i) in enumerate(zip(D, I)):
