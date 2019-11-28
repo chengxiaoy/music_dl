@@ -15,11 +15,7 @@ import torch
 import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
-
 warnings.filterwarnings('ignore')
-
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-device_ids = [0, 1]
 
 
 def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, config, num_epochs=150):
@@ -46,14 +42,14 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, con
             sum_label = torch.zeros(0)
             sum_preds = torch.zeros(0)
             for input1s, input2s, labels in tqdm(dataloaders[phase]):
-
-                # input1s = input1s.to(device)
-                # input2s = input2s.to(device)
-                # labels = labels.to(device)
-
-                input1s = input1s.cuda(device_ids[0]), model.init_h0().cuda(device_ids[0])
-                input2s = input2s.cuda(device_ids[0]), model.init_h0().cuda(device_ids[0])
-                labels = labels.cuda(device_ids[0])
+                if not config.multi_gpu:
+                    input1s = input1s.to(config.device)
+                    input2s = input2s.to(config.device)
+                    labels = labels.to(config.device)
+                else:
+                    input1s = input1s.cuda(config.device_ids[0]), model.init_h0().cuda(config.device_ids[0])
+                    input2s = input2s.cuda(config.device_ids[0]), model.init_h0().cuda(config.device_ids[0])
+                    labels = labels.cuda(config.device_ids[0])
                 labels = labels.squeeze()
 
                 sum_label = torch.cat((sum_label, labels.cpu()))
@@ -137,25 +133,38 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, con
 class Config():
     train_batch_size = 64
     val_batch_size = 64
-    model_type = 'crnn'
+    model_type = 'cnn'  # cnn
     evalue_thr = 0.2
     dataset_size = 50000
+    dataset_pair = True
+
+    device_ids = [0, 1]
+    backbone_type = 'resnet'  # choi
+    multi_gpu = False
+    single_gpu_id = 1
+    device = torch.device("cuda:" + str(single_gpu_id) if torch.cuda.is_available() else "cpu")
 
 
 if __name__ == '__main__':
     config = Config()
     writer = SummaryWriter(logdir=os.path.join("../tb_log", "163muisc_" + datetime.now().strftime('%b%d_%H-%M-%S')))
 
-    siamese_datasets = audio_dataset.get_siamese_datasets(config.dataset_size, pair=True)
+    siamese_datasets = audio_dataset.get_siamese_datasets(config.dataset_size, pair=config.dataset_pair)
     siamese_dataloaders = {
         x: DataLoader(siamese_datasets[x], batch_size=config.train_batch_size, shuffle=True, num_workers=16,
                       drop_last=True) for x in
         ['train', 'val']}
 
-    model = SiameseModelRNN(batch_size=config.train_batch_size)
-    # model = model.cuda(device_ids[0])
-    # model = nn.DataParallel(model, device_ids=device_ids)
-    model = model.to(device)
+    if config.model_type == 'crnn':
+        model = SiameseModelRNN(batch_size=config.train_batch_size)
+    elif config.model_type == 'cnn':
+        model = SiameseModel(type=config.backbone_type)
+
+    if config.multi_gpu:
+        model = model.cuda(config.device_ids[0])
+        model = nn.DataParallel(model, device_ids=config.device_ids)
+    else:
+        model = model.to(config.device)
 
     criterion = loss.ContrastiveLoss(margin=1.6)
     optimizer = Adam(model.parameters(), lr=0.01)

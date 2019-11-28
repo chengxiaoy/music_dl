@@ -10,25 +10,24 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class SiameseModel(nn.Module):
 
-    def __init__(self):
+    def __init__(self, type='resnet'):
         super(SiameseModel, self).__init__()
-        model = resnet34(pretrained=True)
-        model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        model.avgpool = nn.AdaptiveAvgPool2d(1)
-        model = nn.Sequential(*list(model.children())[:-1])
-        self.backbone = model
+        self.backbone_type = 'resnet'
+        if type == 'resnet':
+            model = resnet34(pretrained=True)
+            model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            model.avgpool = nn.AdaptiveAvgPool2d(1)
+            model = nn.Sequential(*list(model.children())[:-1])
+            self.backbone = model
+        elif type == 'choi':
+            self.backbone = CNN_Choi()
+
         self.normal = nn.functional.normalize
-
-        # self.backbone = CNN_Choi()
-
-        # self.ll = nn.Linear(1024, 100)
-        # self.relu = nn.ReLU()
-        # self.ll2 = nn.Linear(100, 1)
-        # self.sigmod = nn.Sigmoid()
 
     def forward_once(self, input):
         output = self.backbone(input)
-        output = output.squeeze(-1).squeeze(-1)
+        if self.backbone_type == 'resnet':
+            output = output.squeeze(-1).squeeze(-1)
         output = self.normal(output)
         return output
 
