@@ -58,6 +58,7 @@ class SiameseModelRNN(nn.Module):
         rnn_in = output.permute([0, 2, 1])
         output, hn = self.gru(rnn_in, h0)
         b = hn.shape[1]
+        hn = hn.permute([1, 0, 2])
         hn = hn.reshape(b, -1)
         return self.normal(hn)
 

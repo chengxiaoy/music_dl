@@ -52,9 +52,9 @@ index = get_index(features)
 # feature_ = model.forward_once(torch.Tensor(compute_melgram_multi_slice(music_path)[0]).float()).detach().numpy()
 feature = np.array([features[paths.index(path)]])
 feature1 = np.array([features[paths.index(path1)]])
-
-print(feature[0][:20])
-print(feature1[0][:20])
+print(feature.dot(feature1.T))
+# print(feature[0][:20])
+# print(feature1[0][:20])
 
 D, I = index.search(feature, recall_num)
 # D, I = tree.query(feature, 4)
