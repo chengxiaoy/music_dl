@@ -44,7 +44,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, con
             for input1s, input2s, labels in tqdm(dataloaders[phase]):
 
                 if config.multi_gpu:
-                    if not config.model_type == 'cnn':
+                    if config.model_type == 'cnn':
                         input1s = input1s.cuda(config.device_ids[0])
                         input2s = input2s.cuda(config.device_ids[0])
                         labels = labels.cuda(config.device_ids[0])
@@ -54,7 +54,7 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, con
                         labels = labels.cuda(config.device_ids[0])
 
                 else:
-                    if not config.model_type == 'cnn':
+                    if config.model_type == 'cnn':
                         input1s = input1s.to(config.device)
                         input2s = input2s.to(config.device)
                         labels = labels.to(config.device)
