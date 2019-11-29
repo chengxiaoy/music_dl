@@ -55,7 +55,7 @@ class SiameseModelRNN(nn.Module):
         self.normal = nn.functional.normalize
         self.pool = nn.MaxPool2d((3, 1))
 
-    def forward_once_rnn(self, input):
+    def forward_once(self, input):
         cnn_input, h0 = input
         output = self.backbone(cnn_input)
         output = self.pool(output).squeeze(dim=2)
@@ -70,8 +70,8 @@ class SiameseModelRNN(nn.Module):
         return self.normal(hn)
 
     def forward(self, input1, input2):
-        output1 = self.forward_once_rnn(input1)
-        output2 = self.forward_once_rnn(input2)
+        output1 = self.forward_once(input1)
+        output2 = self.forward_once(input2)
 
         return output1, output2
 
