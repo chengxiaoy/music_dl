@@ -66,7 +66,8 @@ def full_index_v1(paths):
     model = getFinetuneModel(config, "music_siamese_50000Nov29_02-42-37.pth")
 
     m_dataset = MusicDataset(paths, config.dataset_pair, False)
-    data_loader = DataLoader(m_dataset, shuffle=False, num_workers=8, batch_size=64, collate_fn=collate_double,drop_last=True)
+    data_loader = DataLoader(m_dataset, shuffle=False, num_workers=8, batch_size=64, collate_fn=collate_double,
+                             drop_last=True)
     vec_list = []
     path_list = []
 
@@ -74,8 +75,8 @@ def full_index_v1(paths):
         for mel, path in zip(mels, paths):
             if mel is None:
                 continue
-            if config.model_type=="rcnn":
-                output = model.forward_once((mel.to(device),model.init_h0().to(device)))
+            if config.model_type == "crnn":
+                output = model.forward_once((mel.to(device), model.init_h0().to(device)))
             else:
                 output = model.forward_once(mel.to(device))
             vec = output[0].cpu().detach().numpy()
