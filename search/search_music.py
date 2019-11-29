@@ -41,7 +41,7 @@ def get_index(feature):
 
 recall_num = 10
 
-features, paths = joblib.load('vec_27_02-38-26.pkl')
+features, paths = joblib.load('vec_29_02-42-37.pkl')
 # features, paths = joblib.load('vec.pkl')
 features = np.array(features)
 index = get_index(features)
