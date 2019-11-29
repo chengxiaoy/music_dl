@@ -49,6 +49,8 @@ def collate_double(batch):
 
 
 def getFinetuneModel(config, weight_path):
+    config.train_batch_size = 1
+    config.val_batch_size =1
     model = get_model(config)
     model.load_state_dict(torch.load(weight_path))
     if config.multi_gpu:
