@@ -147,7 +147,7 @@ class Config():
     val_batch_size = 64
     model_type = 'crnn'  # cnn
     evalue_thr = 0.2
-    dataset_size = 50000
+    dataset_size = 10000
     dataset_pair = True
 
     device_ids = [0, 1]

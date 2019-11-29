@@ -62,9 +62,9 @@ class SiameseModelRNN(nn.Module):
         rnn_in = output.permute([0, 2, 1])
         output, hn = self.gru(rnn_in, h0)
         b, h_size = hn.shape[1], hn.shape[2]
-        num_directions = 2 if self.gru_bidirectional else 1
-        hn = hn.view(self.gru_num_layers, num_directions, b, h_size)
-        hn = hn[-1]
+        # num_directions = 2 if self.gru_bidirectional else 1
+        # hn = hn.view(self.gru_num_layers, num_directions, b, h_size)
+        # hn = hn[-1]
         hn = hn.permute([1, 0, 2])
         hn = hn.reshape(b, -1)
         return self.normal(hn)
