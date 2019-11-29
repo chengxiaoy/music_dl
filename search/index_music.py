@@ -6,20 +6,22 @@ import warnings
 import joblib
 import os
 from glob import glob
-from util.audio_dataset import get_mel,split_n_melgram
+from util.audio_dataset import get_mel, split_n_melgram
 from torch import nn
 from tqdm import tqdm
+from train_music163 import *
 
 warnings.filterwarnings('ignore')
-device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class MusicDataset(Dataset):
 
-    def __init__(self, music_paths, multi=False):
+    def __init__(self, music_paths, pair=True, multi=False):
         super(MusicDataset, self).__init__()
         self.music_paths = music_paths
         self.multi = multi
+        self.pair = pair
 
     def __len__(self):
         return len(self.music_paths)
@@ -29,7 +31,12 @@ class MusicDataset(Dataset):
             if self.multi:
                 return audio_processor.compute_melgram_multi_slice(self.music_paths[index]), self.music_paths[index]
             else:
-                return torch.Tensor(split_n_melgram(get_mel(self.music_paths[index])[0])[0]).float(), self.music_paths[index]
+
+                if self.pair:
+                    return torch.Tensor(split_n_melgram(get_mel(self.music_paths[index])[0])[0]).float(), \
+                           self.music_paths[index]
+                else:
+                    return torch.Tensor(get_mel(self.music_paths[index])[0]).float(), self.music_paths[index]
         except Exception as e:
             print(e)
             return None, self.music_paths[index]
@@ -41,16 +48,24 @@ def collate_double(batch):
     return [batch[i][0] for i in range(len(batch))], [batch[i][1] for i in range(len(batch))]
 
 
-def full_index_v1(paths):
-    # load multi gpu weights
-    model = SiameseModel()
-    model = nn.DataParallel(model)
-    model.load_state_dict(torch.load("music_siamese_50000Nov27_02-38-26.pth"))
-    model = model.module
+def getFinetuneModel(config, weight_path):
+    model = get_model(config)
+    model.load_state_dict(torch.load(weight_path))
+    if config.multi_gpu:
+        model = model.module
     model.to(device)
     model.eval()
 
-    m_dataset = MusicDataset(paths, False)
+    return model
+
+
+def full_index_v1(paths):
+    # load multi gpu weights
+
+    config = Config()
+    model = getFinetuneModel(config, "music_siamese_50000Nov29_02-42-37.pth")
+
+    m_dataset = MusicDataset(paths, config.dataset_pair, False)
     data_loader = DataLoader(m_dataset, shuffle=False, num_workers=8, batch_size=16, collate_fn=collate_double)
     vec_list = []
     path_list = []
@@ -64,7 +79,7 @@ def full_index_v1(paths):
             vec_list.append(vec)
             path_list.append(path)
             print("extract vect from {}".format(path))
-    joblib.dump((vec_list, path_list), "vec_27_02-38-26.pkl")
+    joblib.dump((vec_list, path_list), "vec_29_02-42-37.pkl")
 
 
 if __name__ == '__main__':

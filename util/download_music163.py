@@ -26,8 +26,7 @@ def dowload_song(song_id):
         # 这里修改路径，随便指定盘符，但是得存在
 
         subdir = 'data' + str(song_id // 20000)
-
-        data_dir = '../audio/' + subdir + '/'
+        data_dir = './audio/' + subdir + '/'
         if not os.path.exists(data_dir):
             os.mkdir(data_dir)
 

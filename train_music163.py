@@ -157,16 +157,7 @@ class Config():
     device = torch.device("cuda:" + str(single_gpu_id) if torch.cuda.is_available() else "cpu")
 
 
-if __name__ == '__main__':
-    config = Config()
-    writer = SummaryWriter(logdir=os.path.join("../tb_log", "163muisc_" + datetime.now().strftime('%b%d_%H-%M-%S')))
-
-    siamese_datasets = audio_dataset.get_siamese_datasets(config.dataset_size, pair=config.dataset_pair)
-    siamese_dataloaders = {
-        x: DataLoader(siamese_datasets[x], batch_size=config.train_batch_size, shuffle=True, num_workers=16,
-                      drop_last=True) for x in
-        ['train', 'val']}
-
+def get_model(config):
     if config.model_type == 'crnn':
         model = SiameseModelRNN(batch_size=config.train_batch_size)
     elif config.model_type == 'cnn':
@@ -177,6 +168,20 @@ if __name__ == '__main__':
         model = nn.DataParallel(model, device_ids=config.device_ids)
     else:
         model = model.to(config.device)
+    return model
+
+
+if __name__ == '__main__':
+    config = Config()
+    writer = SummaryWriter(logdir=os.path.join("../tb_log", "163muisc_" + datetime.now().strftime('%b%d_%H-%M-%S')))
+
+    siamese_datasets = audio_dataset.get_siamese_datasets(config.dataset_size, pair=config.dataset_pair)
+    siamese_dataloaders = {
+        x: DataLoader(siamese_datasets[x], batch_size=config.train_batch_size, shuffle=True, num_workers=16,
+                      drop_last=True) for x in
+        ['train', 'val']}
+
+    model = get_model(config)
 
     criterion = loss.ContrastiveLoss(margin=1.6)
     optimizer = Adam(model.parameters(), lr=0.01)
