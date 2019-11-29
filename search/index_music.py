@@ -75,7 +75,7 @@ def full_index_v1(paths):
             if mel is None:
                 continue
             if config.model_type=="rcnn":
-                output = model.forward_once(mel.to(device),model.init_h0())
+                output = model.forward_once((mel.to(device),model.init_h0().to(device)))
             else:
                 output = model.forward_once(mel.to(device))
             vec = output[0].cpu().detach().numpy()
