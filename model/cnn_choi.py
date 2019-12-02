@@ -238,7 +238,7 @@ class RCNN_Choi(Module):
 
 
 if __name__ == '__main__':
-    model = RCNN_Choi()
+    model = CNN_Choi_Slim()
 
     # model = resnet34(pretrained=True)
     # model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
