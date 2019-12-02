@@ -9,7 +9,7 @@ from util.download_music163 import dowload_song
 
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-song_id = 28838040
+song_id = 27501701
 
 path = './audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
 music_path = '../audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'

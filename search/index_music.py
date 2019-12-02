@@ -65,7 +65,7 @@ def full_index_v1(paths):
     # load multi gpu weights
 
     config = Config()
-    model = getFinetuneModel(config, "music_siamese_50000Nov29_02-42-37.pth")
+    model = getFinetuneModel(config, "music_siamese_50000Nov29_10-16-28.pth")
 
     m_dataset = MusicDataset(paths, config.dataset_pair, False)
     data_loader = DataLoader(m_dataset, shuffle=False, num_workers=8, batch_size=64, collate_fn=collate_double,
@@ -85,7 +85,7 @@ def full_index_v1(paths):
             vec_list.append(vec)
             path_list.append(path)
             print("extract vect from {}".format(path))
-    joblib.dump((vec_list, path_list), "vec_29_02-42-37.pkl")
+    joblib.dump((vec_list, path_list), "vec_29_10-16-28.pkl")
 
 
 if __name__ == '__main__':
