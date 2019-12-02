@@ -144,8 +144,8 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, con
 
 
 class Config():
-    train_batch_size = 64
-    val_batch_size = 64
+    train_batch_size = 32
+    val_batch_size = 32
     model_type = 'crnn'  # cnn
     evalue_thr = 0.2
     dataset_size = 10000
