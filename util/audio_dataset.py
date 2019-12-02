@@ -155,7 +155,7 @@ class SiameseNeighborDataSet(Dataset):
 
 
 def split_n_melgram(melgram):
-    return melgram[:, :, :, :480], melgram[:, :, :, 886:]
+    return melgram[:, :, :, :683], melgram[:, :, :, 683:]
 
 
 def get_siamese_datasets(size, pair=True):
