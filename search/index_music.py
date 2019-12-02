@@ -50,7 +50,7 @@ def collate_double(batch):
 
 def getFinetuneModel(config, weight_path):
     config.train_batch_size = 1
-    config.val_batch_size =1
+    config.val_batch_size = 1
     model = get_model(config)
     model.load_state_dict(torch.load(weight_path))
     if config.multi_gpu:
@@ -61,12 +61,11 @@ def getFinetuneModel(config, weight_path):
     return model
 
 
-def full_index_v1(paths):
+def full_index_v1(paths, config, model=None):
     # load multi gpu weights
 
-    config = Config()
-    config.model_type = 'cnn'
-    model = getFinetuneModel(config, "music_siamese_50000Nov28_07-11-11.pth")
+    if model == None:
+        model = getFinetuneModel(config, "music_siamese_50000Nov28_07-11-11.pth")
 
     m_dataset = MusicDataset(paths, config.dataset_pair, False)
     data_loader = DataLoader(m_dataset, shuffle=False, num_workers=8, batch_size=64, collate_fn=collate_double,
@@ -93,4 +92,5 @@ if __name__ == '__main__':
     music_path = "./audio/"
     audio_paths = glob(music_path + "*/*.mp3")
     print(len(audio_paths))
-    full_index_v1(audio_paths)
+    config = Config()
+    full_index_v1(audio_paths, config, None)

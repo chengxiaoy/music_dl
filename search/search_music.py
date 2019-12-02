@@ -9,7 +9,7 @@ from util.download_music163 import dowload_song
 
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-song_id = 27501701
+song_id = 28018075
 
 path = './audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
 music_path = '../audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
@@ -41,7 +41,7 @@ def get_index(feature):
 
 recall_num = 10
 
-features, paths = joblib.load('vec_29_02-42-37.pkl')
+features, paths = joblib.load('vec_28_07-11-11.pkl')
 # features, paths = joblib.load('vec.pkl')
 features = np.array(features)
 index = get_index(features)

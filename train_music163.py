@@ -13,6 +13,7 @@ from tqdm import tqdm
 import warnings
 import torch
 import os
+from search import index_music
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 warnings.filterwarnings('ignore')
@@ -145,10 +146,10 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, con
 class Config():
     train_batch_size = 64
     val_batch_size = 64
-    model_type = 'crnn'  # cnn
+    model_type = 'cnn'  # cnn
     evalue_thr = 0.2
     dataset_size = 10000
-    dataset_pair = True
+    dataset_pair = False
 
     device_ids = [0, 1]
     backbone_type = 'resnet'  # choi
@@ -186,4 +187,9 @@ if __name__ == '__main__':
     criterion = loss.ContrastiveLoss(margin=1.6)
     optimizer = Adam(model.parameters(), lr=0.01)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=6, factor=0.1, verbose=True)
-    train_model(model, siamese_dataloaders, criterion, optimizer, writer, scheduler, config, num_epochs=100)
+    model, _ = train_model(model, siamese_dataloaders, criterion, optimizer, writer, scheduler, config, num_epochs=30)
+
+    music_path = "./audio/"
+    audio_paths = glob(music_path + "*/*.mp3")
+    print(len(audio_paths))
+    index_music.full_index_v1(audio_paths, config)
