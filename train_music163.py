@@ -152,7 +152,7 @@ class Config():
     dataset_pair = False
 
     device_ids = [0, 1]
-    backbone_type = 'resnet'  # choi
+    backbone_type = 'choi'  # choi
     multi_gpu = False
     single_gpu_id = 1
     device = torch.device("cuda:" + str(single_gpu_id) if torch.cuda.is_available() else "cpu")
@@ -160,7 +160,7 @@ class Config():
 
 def get_model(config):
     if config.model_type == 'crnn':
-        model = SiameseModelRNN(batch_size=config.train_batch_size)
+        model = SiameseModelRNN(batch_size=config.train_batch_size, type=config.backbone_type)
     elif config.model_type == 'cnn':
         model = SiameseModel(type=config.backbone_type)
 

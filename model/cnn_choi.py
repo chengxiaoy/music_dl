@@ -47,7 +47,7 @@ class CNN_Choi(Module):
         # block6
         self.conv6 = nn.Conv2d(2048, 1024, 1)
 
-        self.fc = nn.Linear(1024, 10)
+        self.fc = nn.Linear(1024, 512)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -77,7 +77,7 @@ class CNN_Choi(Module):
 
         x = self.conv6(x)
         x = x.view(x.size(0), -1)
-        # x = self.fc(x)
+        x = self.fc(x)
         return x
 
 
@@ -167,7 +167,7 @@ class RCNN_Choi(Module):
         self.bn = nn.BatchNorm2d(96)
 
         # block1
-        self.conv1 = nn.Conv2d(1, 64, 3, padding=(0, 38))
+        self.conv1 = nn.Conv2d(1, 64, 3, padding=(1, 38))
 
         self.bn1 = nn.BatchNorm2d(64)
         self.activate1 = nn.ELU()
@@ -199,7 +199,7 @@ class RCNN_Choi(Module):
         self.gru2 = nn.GRU(32, 32)
         self.dropout5 = nn.Dropout(0.3)
 
-        self.fc = nn.Linear(32, 10)
+        self.fc = nn.Linear(32, 32)
 
     def forward(self, x):
         # x = x.permute(0, 2, 1, 3)
@@ -238,11 +238,11 @@ class RCNN_Choi(Module):
 
 
 if __name__ == '__main__':
-    # model = CNN_Choi()
+    model = RCNN_Choi()
 
-    model = resnet34(pretrained=True)
-    model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-    model = nn.Sequential(*list(model.children())[:-1])
+    # model = resnet34(pretrained=True)
+    # model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+    # model = nn.Sequential(*list(model.children())[:-1])
     audio_path = "../audio/bensound-actionable.mp3"
     mel_spectrum = compute_melgram(audio_path)
     mel_spectrum = torch.from_numpy(mel_spectrum).float()
