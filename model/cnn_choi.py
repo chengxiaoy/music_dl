@@ -197,7 +197,7 @@ class RCNN_Choi(Module):
 
         self.gru1 = nn.GRU(128, 32)
         self.gru2 = nn.GRU(32, 32)
-        self.dropout5 = nn.Dropout(0.3)
+        # self.dropout5 = nn.Dropout(0.3)
 
         self.fc = nn.Linear(32, 32)
 
@@ -231,7 +231,7 @@ class RCNN_Choi(Module):
         output1, hidden1 = self.gru1(x)
         output2, hidden2 = self.gru2(output1)
         x = hidden2
-        x = self.dropout5(x)
+        # x = self.dropout5(x)
         x = x.squeeze(dim=0)
         x = self.fc(x)
         return x
