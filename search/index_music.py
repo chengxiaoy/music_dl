@@ -12,7 +12,7 @@ from tqdm import tqdm
 from train_music163 import *
 
 warnings.filterwarnings('ignore')
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 
 class MusicDataset(Dataset):
@@ -65,7 +65,8 @@ def full_index_v1(paths):
     # load multi gpu weights
 
     config = Config()
-    model = getFinetuneModel(config, "music_siamese_50000Nov29_10-16-28.pth")
+    config.model_type = 'cnn'
+    model = getFinetuneModel(config, "music_siamese_50000Nov28_07-11-11.pth")
 
     m_dataset = MusicDataset(paths, config.dataset_pair, False)
     data_loader = DataLoader(m_dataset, shuffle=False, num_workers=8, batch_size=64, collate_fn=collate_double,
@@ -85,7 +86,7 @@ def full_index_v1(paths):
             vec_list.append(vec)
             path_list.append(path)
             print("extract vect from {}".format(path))
-    joblib.dump((vec_list, path_list), "vec_29_10-16-28.pkl")
+    joblib.dump((vec_list, path_list), "vec_28_07-11-11.pkl")
 
 
 if __name__ == '__main__':
