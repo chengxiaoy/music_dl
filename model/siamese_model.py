@@ -20,7 +20,7 @@ class SiameseModel(nn.Module):
             model = nn.Sequential(*list(model.children())[:-1])
             self.backbone = model
         elif type == 'choi':
-            self.backbone = CNN_Choi_Slim()
+            self.backbone = CNN_Choi()
 
         self.normal = nn.functional.normalize
 
