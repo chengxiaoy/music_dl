@@ -144,8 +144,8 @@ def train_model(model, dataloaders, criterion, optimizer, writer, scheduler, con
 
 
 class Config():
-    train_batch_size = 16
-    val_batch_size = 16
+    train_batch_size = 32
+    val_batch_size = 32
     model_type = 'cnn'  # cnn
     evalue_thr = 0.2
     dataset_size = 10000
@@ -154,7 +154,7 @@ class Config():
     device_ids = [0, 1]
     backbone_type = 'choi'  # choi
     multi_gpu = False
-    single_gpu_id = 1
+    single_gpu_id = 0
     device = torch.device("cuda:" + str(single_gpu_id) if torch.cuda.is_available() else "cpu")
 
 
