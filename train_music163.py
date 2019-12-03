@@ -187,9 +187,11 @@ if __name__ == '__main__':
     criterion = loss.ContrastiveLoss(margin=1.6)
     optimizer = Adam(model.parameters(), lr=0.01)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=6, factor=0.1, verbose=True)
-    model, _ = train_model(model, siamese_dataloaders, criterion, optimizer, writer, scheduler, config, num_epochs=30)
+    model, _ = train_model(model, siamese_dataloaders, criterion, optimizer, writer, scheduler, config, num_epochs=6)
 
     music_path = "./audio/"
     audio_paths = glob(music_path + "*/*.mp3")
     print(len(audio_paths))
+    audio_paths = sorted(audio_paths)
+    audio_paths = audio_paths[:config.dataset_size]
     index_music.full_index_v1(audio_paths, config, model)
