@@ -194,10 +194,20 @@ if __name__ == '__main__':
     genres_path = "./audio/"
     audio_paths = glob(genres_path + "data*/*.mp3")
     mel_paths = [x.replace('.mp3', '.pkl') for x in audio_paths]
-    print(mel_paths)
-    p = Pool(16)
-    args = []
-    for audio_path, mel_path in zip(audio_paths, mel_paths):
-        args.append((audio_path, mel_path))
 
-    p.map(audio2Multimel, args)
+    valid_audio_paths = []
+    for audio_path, mel_path in zip(audio_paths, mel_paths):
+        if os.path.exists(audio_path) and os.path.exists(mel_path):
+            valid_audio_paths.append(audio_path)
+
+    with open("path.txt", "w") as f:
+        for line in valid_audio_paths:
+            f.write(line.replace(genres_path, "../music_dl/audio") + '\n')
+
+    # print(mel_paths)
+    # p = Pool(16)
+    # args = []
+    # for audio_path, mel_path in zip(audio_paths, mel_paths):
+    #     args.append((audio_path, mel_path))
+    #
+    # p.map(audio2Multimel, args)

@@ -9,15 +9,15 @@ from util.download_music163 import dowload_song
 
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-song_id = 28018075
+song_id = 209524
 
 path = './audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
 music_path = '../audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
 
-song_id1 = 308299
-path1 = './audio/data' + str(song_id1 // 20000) + "/" + str(song_id1) + '.mp3'
-
-music_path1 = '../audio/data' + str(song_id1 // 20000) + "/" + str(song_id1) + '.mp3'
+# song_id1 = 308299
+# path1 = './audio/data' + str(song_id1 // 20000) + "/" + str(song_id1) + '.mp3'
+#
+# music_path1 = '../audio/data' + str(song_id1 // 20000) + "/" + str(song_id1) + '.mp3'
 
 
 # music_path = dowload_song(song_id)
@@ -30,6 +30,9 @@ music_path1 = '../audio/data' + str(song_id1 // 20000) + "/" + str(song_id1) + '
 # model = model.module
 # model.to(device)
 # model.eval()
+
+
+
 
 
 def get_index(feature):
@@ -51,8 +54,8 @@ index = get_index(features)
 # feature2 = model.forward_once(torch.Tensor(compute_melgram(music_path2)).float()).detach().numpy()
 # feature_ = model.forward_once(torch.Tensor(compute_melgram_multi_slice(music_path)[0]).float()).detach().numpy()
 feature = np.array([features[paths.index(path)]])
-feature1 = np.array([features[paths.index(path1)]])
-print(feature.dot(feature1.T))
+# feature1 = np.array([features[paths.index(path1)]])
+# print(feature.dot(feature1.T))
 # print(feature[0][:20])
 # print(feature1[0][:20])
 
