@@ -26,7 +26,7 @@ def dowload_song(song_id):
         # 这里修改路径，随便指定盘符，但是得存在
 
         subdir = 'data' + str(song_id // 20000)
-        data_dir = './audio/' + subdir + '/'
+        data_dir = '../audio/' + subdir + '/'
         if not os.path.exists(data_dir):
             os.mkdir(data_dir)
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     #
     # p.map(dowload_song, song_ids)
 
-    dowload_song(316108)
+    dowload_song(306855)
     #
     # download_playlist(2916766519, '轻音乐')
     # download_playlist(959196950, '轻音乐')
