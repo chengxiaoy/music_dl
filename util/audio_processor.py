@@ -67,6 +67,7 @@ def compute_melgram_multi_slice(audio_path, SR=12000, N_FFT=512, N_MELS=96, HOP_
 
 
 if __name__ == '__main__':
+
     audio_path = "../audio/Fabel-不生不死.mp3"
     mel_spectrum = compute_melgram_multi_slice(audio_path, SR=22050, N_FFT=2048, N_MELS=128, HOP_LEN=1024, DURA=30)
     print(mel_spectrum.shape)

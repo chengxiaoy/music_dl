@@ -12,7 +12,6 @@ from tqdm import tqdm
 from train_music163 import *
 
 warnings.filterwarnings('ignore')
-device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 
 class MusicDataset(Dataset):
@@ -55,7 +54,7 @@ def getFinetuneModel(config, weight_path):
     model.load_state_dict(torch.load(weight_path))
     if config.multi_gpu:
         model = model.module
-    model.to(device)
+    model.to(config.device)
     model.eval()
 
     return model
@@ -78,9 +77,9 @@ def full_index_v1(paths, config, model=None):
             if mel is None:
                 continue
             if config.model_type == "crnn":
-                output = model.forward_once((mel.to(device), model.init_h0().to(device)))
+                output = model.forward_once((mel.to(config.device), model.init_h0().to(config.device)))
             else:
-                output = model.forward_once(mel.to(device))
+                output = model.forward_once(mel.to(config.device))
             vec = output[0].cpu().detach().numpy()
             vec_list.append(vec)
             path_list.append(path)
