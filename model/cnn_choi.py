@@ -120,7 +120,7 @@ class CNN_Choi_Slim(Module):
         self.bn5 = nn.BatchNorm2d(64)
         self.activate5 = nn.ELU()
         self.maxpool5 = nn.MaxPool2d((4, 4))
-        # self.hidden = nn.Linear(64, 256)
+        self.hidden = nn.Linear(64, 256)
 
     def forward(self, x):
         # x = x.permute(0, 2, 1, 3)
@@ -153,7 +153,7 @@ class CNN_Choi_Slim(Module):
         x = self.maxpool5(x)
 
         x = x.view(x.size(0), -1)
-        # x = self.hidden(x)
+        x = self.hidden(x)
 
         # x = self.fc(x)
         return x
