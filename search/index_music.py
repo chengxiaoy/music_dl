@@ -85,7 +85,7 @@ def full_index_v1(paths, config, model=None):
             vec_list.append(vec)
             path_list.append(path)
             print("extract vect from {}".format(path))
-    joblib.dump((vec_list, path_list), "vec_28_07-11-11.pkl")
+    joblib.dump((vec_list, path_list), "vec_new.pkl")
 
 
 if __name__ == '__main__':
