@@ -200,8 +200,8 @@ if __name__ == '__main__':
         if os.path.exists(audio_path) and os.path.exists(mel_path):
             valid_audio_paths.append(audio_path)
 
-    with open("path.txt", "w") as f:
-        for line in valid_audio_paths[:100000]:
+    with open("path_100.txt", "w") as f:
+        for line in valid_audio_paths[:100]:
             f.write(line.replace(genres_path, "../music_dl/audio/") + '\n')
 
     # print(mel_paths)
