@@ -10,10 +10,9 @@ from sklearn.preprocessing import normalize
 
 device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
 
-song_id = 209581
+song_id = 29966565
 
-
-path = './audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
+path = '../music_dl/audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
 music_path = '../audio/data' + str(song_id // 20000) + "/" + str(song_id) + '.mp3'
 
 
@@ -26,14 +25,18 @@ def get_index(feature):
 
 recall_num = 10
 
-features, paths = joblib.load('vec_28_07-11-11.pkl')
+paths, features = joblib.load('features.pkl')
+# features, paths = joblib.load('vec_28_07-11-11.pkl')
 
 # with open("path.txt") as f:
 #     paths = f.readlines()
-# paths = [x.strip('\n') for x in paths]
-# features = normalize(np.load("features.npy"))
+paths = [x.strip('\n') for x in paths]
+features = normalize(features)
+print(len(features))
+# print(features[0])
+# print(paths[0])
 
-features = np.array(features)
+features = np.array(features).astype(np.float32)
 index = get_index(features)
 
 feature = np.array([features[paths.index(path)]])
